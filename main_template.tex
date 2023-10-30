@@ -24,9 +24,9 @@
 % ---------------------------------------------------------------------------- %
 
 % ------------------------------------------------------------------
-% small snippet of code from stack overflow that allows me to assign
+% small snippet of code from stack overflow that allows to assign
 % the correct pathname for the references directory when using
-% my local system instead of Overleaf when working with others 
+% the local system instead of Overleaf when working with others
 % https://tex.stackexchange.com/questions/107864/ifusername-foo-else-fi
 \usepackage{catchfile}
 
@@ -36,7 +36,7 @@
     \CatchFileEdef#1{"|kpsewhich -var-value #2"}{\endlinechar=-1 }%
 }
 
-\def\me{dubidub}
+\def\me{yourusername}
 \getvar{\usrtest}{USER}
 
 \ifx\me\usrtest
