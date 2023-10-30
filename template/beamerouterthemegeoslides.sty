@@ -1,0 +1,106 @@
+% ---------------------------------------------------------------------------- %
+% GeoSlides Template for Presentations                                         %
+% Modified from the NHH-FAIR Template for Presentations                        %
+% Author: Alessandro Pizzigolotto (UCPH)                                       %
+% Version: 1.0                                                                 %
+% ---------------------------------------------------------------------------- %
+
+% Outer defines the appearance of the chrome of the slide,
+% e.g., the title and footer of each slide
+
+% require tikz package for the functioning
+\RequirePackage{tikz}
+
+% require svg package for .svg logos
+\RequirePackage{svg}
+
+% require hyperref package for anchors
+\RequirePackage{hyperref}
+
+% Headline
+
+% Define the logo. As it turns out. I could not include the logo in the 
+% headline. If I tried to, the headline kept shifting downwards. Acting a little
+% smart and lazy, I just included the logo in the right sidebar and shifted it up. 
+
+\def\logo{%
+  % \includegraphics[width=25mm]{./figures/logos/fairlogobig.png}%
+  % \includegraphics[width=8mm]{./figures/logos/nhh_logo_1f_positiv_helblaa.png}%
+  % \includegraphics[width=8mm]{./figures/logos/brownlogo.png}%
+}
+
+
+\def\frontlogo{%
+  \centering
+  % change if you want a front logo
+  % \includegraphics[height=50pt,keepaspectratio]{./figures/logos/nhh_logo_1f_positiv_helblaa.png}\hspace*{5pt}~%
+  %\includegraphics[height=50pt,keepaspectratio]{./figures/logos/fair-kvadratisk.pdf}%
+}
+
+\setbeamertemplate{sidebar canvas right}{
+  % change here to fit the headline logo
+  % \vspace*{-2pt}\hspace*{-70pt}%
+  % \vspace*{10pt}\hspace*{-35pt}%
+  \vspace*{10pt}\hspace*{-35pt}%
+  {\logo}
+}
+
+% First the horizontal line on the top portion of the slides
+% Add a horizontal line that runs from left of the slide to the right, just below the logo.
+
+\newcommand{\LogoLine}{%
+  \raisebox{-12mm}[0pt][0pt]{%
+    \begin{pgfpicture}{0mm}{0mm}{0mm}{0mm}
+      \pgfsetlinewidth{0.28mm}
+    \end{pgfpicture}}
+}
+
+% Include the line that we just created in the headline
+\setbeamertemplate{headline}{\LogoLine}
+
+% for the title bar
+\newlength{\marginedPaperWidth}{\paperwidth - 0.5cm}
+
+% Frame title layout
+\defbeamertemplate*{frametitle}{nhhcustom}[1][]{
+  \vskip0.5cm%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.2cm]{frametitle}
+    \begin{tikzpicture}
+      \useasboundingbox(0,0) rectangle(\the\paperwidth,1.2);
+      {\usebeamercolor[fg]{frametitle-left}}
+      \fill[color=frametitle-left.fg] (0.2,0) rectangle(\the\marginedPaperWidth,1.2);
+      \ifx\insertframesubtitle\@empty%
+        {\node[anchor=west] at (0.3,0.61){\usebeamerfont{frametitle}\insertframetitle};}
+        \else%
+        {\node[anchor=west] at (0.2,0.81){\usebeamerfont{frametitle}\insertframetitle};%
+          \node[anchor=west] at (0.4,0.25){\usebeamercolor[fg]{framesubtitle}\usebeamerfont{framesubtitle}\insertframesubtitle};}%
+      \fi
+    \end{tikzpicture}
+  \end{beamercolorbox}
+}
+
+
+% footline as in madrid 
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}{footlinecolor}
+    \leavevmode%
+    \hbox{%
+      \begin{beamercolorbox}[wd=.333333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+        \usebeamerfont{author in head/foot}\insertshortauthor\expandafter\beamer@ifempty\expandafter{\beamer@shortinstitute}{}{~~(\insertshortinstitute)}
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.333333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+        \usebeamerfont{title in head/foot}\hypersetup{hidelinks}\insertshorttitle%
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.222222222\paperwidth,ht=2.25ex,dp=1ex, right]{date in head/foot}%
+        \usebeamerfont{date in head/foot}\insertshortdate%\hspace*{2em}
+      \end{beamercolorbox}
+      \begin{beamercolorbox}[wd=.111111111\paperwidth,ht=2.25ex,dp=1ex, right]{page number in head/foot}%
+        \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+      \end{beamercolorbox}
+    }%
+    \vskip0pt%
+  \end{beamercolorbox}
+}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}

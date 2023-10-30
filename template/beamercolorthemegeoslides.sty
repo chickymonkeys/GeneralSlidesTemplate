@@ -1,0 +1,96 @@
+% ---------------------------------------------------------------------------- %
+% GeoSlides Template for Presentations                                         %
+% Modified from the NHH-FAIR Template for Presentations                        %
+% Author: Alessandro Pizzigolotto (UCPH)                                       %
+% Version: 1.0                                                                 %
+% ---------------------------------------------------------------------------- %
+
+% ------------------------------------------------------------------------------
+% Define Title Colour and Font Size
+% ------------------------------------------------------------------------------
+
+\setbeamercolor*{frametitle-left}{fg=primarycolor}
+\setbeamercolor*{frametitle}{fg=primarycolor}
+\setbeamercolor*{framesubtitle}{fg=secondarycolor}
+
+\setbeamerfont*{frametitle}{size=\Large}
+\setbeamerfont*{framesubtitle}{size=\small}
+
+% ------------------------------------------------------------------------------
+% Define Font in Text
+% ------------------------------------------------------------------------------
+
+\setbeamerfont*{description item}{series=\bfseries}
+
+% ------------------------------------------------------------------------------
+% Define Colours in Text
+% ------------------------------------------------------------------------------
+
+\setbeamercolor*{normal text}{fg=normaltext}
+
+% ------------------------------------------------------------------------------
+% Define Colours in Lists
+% ------------------------------------------------------------------------------
+
+\setbeamercolor*{itemize item}{fg=normaltext}
+\setbeamercolor*{enumerate item}{fg=normaltext}
+
+\setbeamercolor*{itemize subitem}{fg=normaltext}
+\setbeamercolor*{itemize subsubitem}{fg=normaltext}
+
+\setbeamercolor*{enumerate subitem}{fg=normaltext}
+\setbeamercolor*{enumerate subsubitem}{fg=normaltext}
+
+\setbeamercolor*{itemize/enumerate subbody}{fg=normaltext}
+\setbeamercolor*{itemize/enumerate subsubbody}{fg=normaltext}
+
+\setbeamercolor*{description item}{fg=primarycolor}
+
+% ------------------------------------------------------------------------------
+% Define TOC Colours
+% ------------------------------------------------------------------------------
+
+\setbeamercolor*{section in toc}{fg=primarycolor}
+\setbeamercolor*{section in toc shaded}{fg=primarycolor}
+\setbeamercolor*{subsection in toc}{fg=normaltext}
+\setbeamercolor*{subsection in toc shaded}{fg=shadecolor}
+
+% ------------------------------------------------------------------------------
+% Footline Colours (Mono)
+% ------------------------------------------------------------------------------
+
+\setbeamercolor*{footlinecolor}{bg=primarycolor}
+\setbeamercolor*{author in head/foot}{fg=footertext}
+\setbeamercolor*{title in head/foot}{bg=footertext,fg=primarycolor}
+\setbeamercolor*{date in head/foot}{fg=footertext}
+\setbeamercolor*{page number in head/foot}{fg=footertext}
+
+% ------------------------------------------------------------------------------
+% Captions (if set to simple or parens)
+% ------------------------------------------------------------------------------
+
+\setbeamercolor*{caption}{fg=footertext}
+\setbeamercolor*{caption name}{fg=primarycolor}
+
+% ------------------------------------------------------------------------------
+% Citations, Links and URLs
+% ------------------------------------------------------------------------------
+
+% to set-up particular colours for the hyperlinks
+% in particular for what matters the citations
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = secondarycolor,
+  citecolor  = citecolor,
+  urlcolor   = citecolor
+}
+
+% for highlighting with the same colour of the main pattern!
+% FIXME: remember to change it when you change the main layout colour
+\newcommand{\shine}[1]{\textcolor{secondarycolor}{#1}}
+
+% ------------------------------------------------------------------------------
+% Buttons
+% ------------------------------------------------------------------------------
+
+\setbeamercolor{button}{bg=footertext,fg=primarycolor}

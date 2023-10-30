@@ -1,0 +1,188 @@
+% !TEX program = xelatex
+% !BIB program = bibtex
+
+\documentclass[10pt]{beamer}
+
+% ---------------------------------------------------------------------------- %
+%   b. Beamer Template                                                         %
+% ---------------------------------------------------------------------------- %
+
+\usepackage{template/beamerthemegeoslides}
+
+% ---------------------------------------------------------------------------- %
+%   c. General Utility Packages                                                %
+% ---------------------------------------------------------------------------- %
+
+% Babel dictionaries, include the languages I use in the paper
+\usepackage[main=british]{babel}
+
+% Define Dates
+\usepackage[en-GB]{datetime2}
+
+% ---------------------------------------------------------------------------- %
+%   d. Personal Data and User Ad-Hoc Commands                                  %
+% ---------------------------------------------------------------------------- %
+
+% ------------------------------------------------------------------
+% small snippet of code from stack overflow that allows me to assign
+% the correct pathname for the references directory when using
+% my local system instead of Overleaf when working with others 
+% https://tex.stackexchange.com/questions/107864/ifusername-foo-else-fi
+\usepackage{catchfile}
+
+% #1 = control sequence to define
+% #2 = variable to get the value of
+\newcommand{\getvar}[2]{%
+    \CatchFileEdef#1{"|kpsewhich -var-value #2"}{\endlinechar=-1 }%
+}
+
+\def\me{dubidub}
+\getvar{\usrtest}{USER}
+
+\ifx\me\usrtest
+    \newcommand*{\RefsPath}{../references}
+\else
+    \newcommand*{\RefsPath}{docs/references}
+\fi
+
+
+% Setup Frame Title Continuation
+\setbeamertemplate{frametitle continuation}[from second][(contd.)]
+% \addtobeamertemplate{frametitle continuation}{(}{)}
+
+% relative pathnames for figures and tables
+\graphicspath{ {../../out/graphs/}{./figures/} } % Figures Path
+\newcommand*{\TablesPath}{../../out/tables/}
+\makeatletter
+\newcommand*\ExpandableInput[1]{\@@input#1 }
+\makeatother
+
+% change label format to simple or parens from empty to have numbers
+\captionsetup[figure]{%
+    justification=justified, skip=0pt, labelformat=simple,%
+    font={singlespacing,scriptsize}, position=top%
+}%
+\captionsetup[table]{%
+    justification=justified, skip=0pt, labelformat=simple,%
+    font={singlespacing,scriptsize}, position=top%
+}%
+\captionsetup[subfloat]{%
+    justification=centering, skip=0pt, labelformat=simple, position=top,%
+    textfont={singlespacing,footnotesize}%
+}%
+
+% High-Res Pictures Option
+\DeclareGraphicsExtensions{.pdf, .png}
+
+% \let\oldcite=\cite
+% \let\oldcitet=\citet
+% \let\oldcitep=\citep
+% \let\oldcitealp=\citealp
+% \renewcommand{\citet}[2][]{\textcolor{cool-gray-9-nhh}{\oldcitet[#1]{#2}}}
+% \renewcommand{\citep}[2][]{\textcolor{cool-gray-9-nhh}{\oldcitep[#1]{#2}}}
+% \renewcommand{\citealp}[2][]{\textcolor{cool-gray-9-nhh}{\oldcitealp[#1]{#2}}}
+% \renewcommand{\cite}[2][]{\textcolor{cool-gray-9-nhh}{\oldcite[#1]{#2}}}
+
+% Master slide definitions
+\title[Main Title Footer] % (optional, only for long titles)
+{A Very interesting Title}
+\subtitle{A Very interesting (optional) subtitle}
+\author[First~Author (Presenter)]% (optional, for multiple authors)
+{First~Author\inst{1} \and Second~Author\inst{2}}
+\institute[] % (optional)
+{%
+  \inst{1}%
+  University of the Black Metal
+  \and
+  \inst{2}%
+  University of the Shoegaze
+}%
+
+\date[Topic]% (optional)
+{Department of Whatever \\[0.1em]
+Institution\\[1em]
+\DTMdate{2023-01-01}}
+\subject{Presentation}
+
+%----------------------------------------------------------------------------- %
+%   PRESENTATION BODY                                                          %
+%----------------------------------------------------------------------------- %
+
+\begin{document}
+
+%----------------------------------------------------------------------------- %
+%   TITLE SLIDE                                                                %
+%----------------------------------------------------------------------------- %
+
+\begin{frame}[plain]
+    \titlepage
+    \frontlogo
+\end{frame}
+
+%----------------------------------------------------------------------------- %
+%   INTRODUCTION                                                               %
+%----------------------------------------------------------------------------- %
+
+% --------------------------------------------------------------
+\section*{Introduction}
+% --------------------------------------------------------------
+
+% --------------------------------------------------------------
+
+\begin{frame}{Introduction}{A Smart subtitle}
+
+    \citet[p. 385]{bib:becker1993}:\\
+
+    \begin{displayquote}
+        ``The economic approach is a method of analysis, not an assumption of particular motivations. [...] The analysis assumes that individuals maximize welfare as they conceive it, whether they be selfish, altruistic, loyal, spiteful, or masochistic. Their behaviour is forward-looking, and it is also assumed to be consistent over time. In particular, they try as best they can to anticipate the uncertain consequences of their actions. Forward-looking behaviour, however, may still be rooted in the past, for the past can exert long shadows on attitudes and values.''
+    \end{displayquote}
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------- %
+%   FULL OUTLINE                                                               %
+%----------------------------------------------------------------------------- %
+
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+%----------------------------------------------------------------------------- %
+%   REFERENCES                                                                 %
+%----------------------------------------------------------------------------- %
+
+% workaround to hide natbib bibliography keeping the citations
+% make a frame with allowframebreaks if you want to keep them otherwise
+\newsavebox\mytempbib
+\bibliographystyle{aea}
+\savebox\mytempbib{\parbox{\textwidth}{\bibliography{references.bib}}}
+
+
+%----------------------------------------------------------------------------- %
+%   BACKUP SLIDES                                                              %
+%----------------------------------------------------------------------------- %
+
+% --------------------------------------------------------------
+\section*{Appendix}
+% --------------------------------------------------------------
+
+\appendix
+\backupbegin
+
+% Backup Slides Title Page
+\begin{frame}
+    \centering
+    \begin{LARGE}Thank you!\end{LARGE}
+
+    \vspace{1em}
+
+    \begin{Large}\href{mailto:alpi@econ.ku.dk}{alpi@econ.ku.dk}\end{Large}
+
+\end{frame}
+
+% --------------------------------------------------------------
+%     You don't have to mess with anything below this line.
+% --------------------------------------------------------------
+
+\end{document}

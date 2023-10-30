@@ -1,0 +1,27 @@
+% ---------------------------------------------------------------------------- %
+% GeoSlides Template for Presentations                                         %
+% Modified from the NHH-FAIR Template for Presentations                        %
+% Author: Alessandro Pizzigolotto (UCPH)                                       %
+% Version: 1.0                                                                 %
+% ---------------------------------------------------------------------------- %
+
+% Inner defines the appearance of any items that make up the slides central
+% content e.g., lists or the title on the title page and things like this
+
+% to redefine itemsep automatically
+% https://jayrobwilliams.com/posts/2019/10/better-beamer
+
+% define background colour
+\setbeamercolor*{background canvas}{bg=backgroundcolor}
+
+% define main title colour overriding default settings
+\setbeamercolor*{title}{fg=primarycolor}
+
+\newcommand{\backupbegin}{
+  \newcounter{framenumberappendix}
+  \setcounter{framenumberappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+  \addtocounter{framenumberappendix}{-\value{framenumber}}
+  \addtocounter{framenumber}{\value{framenumberappendix}}
+}
