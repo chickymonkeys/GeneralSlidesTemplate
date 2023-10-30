@@ -74,14 +74,14 @@
 % High-Res Pictures Option
 \DeclareGraphicsExtensions{.pdf, .png}
 
-% \let\oldcite=\cite
-% \let\oldcitet=\citet
-% \let\oldcitep=\citep
-% \let\oldcitealp=\citealp
-% \renewcommand{\citet}[2][]{\textcolor{cool-gray-9-nhh}{\oldcitet[#1]{#2}}}
-% \renewcommand{\citep}[2][]{\textcolor{cool-gray-9-nhh}{\oldcitep[#1]{#2}}}
-% \renewcommand{\citealp}[2][]{\textcolor{cool-gray-9-nhh}{\oldcitealp[#1]{#2}}}
-% \renewcommand{\cite}[2][]{\textcolor{cool-gray-9-nhh}{\oldcite[#1]{#2}}}
+\let\oldcite=\cite
+\let\oldcitet=\citet
+\let\oldcitep=\citep
+\let\oldcitealp=\citealp
+\renewcommand{\citet}[2][]{\textcolor{grayku}{\oldcitet[#1]{#2}}}
+\renewcommand{\citep}[2][]{\textcolor{grayku}{\oldcitep[#1]{#2}}}
+\renewcommand{\citealp}[2][]{\textcolor{grayku}{\oldcitealp[#1]{#2}}}
+\renewcommand{\cite}[2][]{\textcolor{grayku}{\oldcite[#1]{#2}}}
 
 % Master slide definitions
 \title[Main Title Footer] % (optional, only for long titles)
