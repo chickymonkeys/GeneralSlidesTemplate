@@ -27,6 +27,14 @@
 % ------------------------------------------------------------------------------
 
 \setbeamercolor*{normal text}{fg=normaltext}
+\BeforeBeginEnvironment{assumption}{%
+  \setbeamercolor{block title}{fg=primarycolor}
+  \setbeamercolor{block body}{fg=normaltext}
+}
+\AfterEndEnvironment{assumption}{
+  \setbeamercolor{block title}{use=structure}
+  \setbeamercolor{block body}{parent=normaltext}
+}
 
 % ------------------------------------------------------------------------------
 % Define Colours in Lists

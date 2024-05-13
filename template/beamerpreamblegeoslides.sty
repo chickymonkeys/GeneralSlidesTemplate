@@ -27,7 +27,7 @@
     Path           = ./fonts/,%
     ItalicFont     = NeutraText-BookItalic.otf,%
     BoldItalicFont = NeutraText-BoldItalic.otf,%
-    BoldFont       = NeutraText-Bold.otf,%
+    BoldFont       = NeutraText-Bold.otf%
 ]{NeutraText-Book.otf}
 
 % figures and tables objects ---------------------------------------------------
@@ -148,7 +148,7 @@
 % Setup Colors -----------------------------------------------------------------
 
 \colorlet{normaltext}{darkgrayku}
-\colorlet{footertext}{lightredku}
+\colorlet{footertext}{lightgrayku}
 \colorlet{primarycolor}{darkredku}
 \colorlet{secondarycolor}{redku}
 \colorlet{shadecolor}{lightgrayku}
@@ -164,7 +164,7 @@
 \usepackage{xfrac}
 
 % Framed theorems
-\usepackage{mdframed}
+%\usepackage{mdframed}
 
 % tikz from matplotlib
 \usepackage{tikz}         % Drawing Graphs
@@ -174,6 +174,8 @@
 % ------------------------------------------------------------------------------
 % Environments
 % ------------------------------------------------------------------------------
+
+\setbeamertemplate{theorems}[numbered]
 
 % \theoremstyle{definition}
 % \newtheorem{theorem}{\color{green}{\textbf{Theorem}}}[section]
@@ -193,7 +195,7 @@
 % \theoremstyle{definition}
 % \newtheorem{definition}{\color{blue}{\textbf{Definition}}}[section]
 % \newtheorem{example}{\color{purple}Example}[section]
-% \newtheorem{assumption}{Assumption}[section]
+\newtheorem{assumption}{Assumption}
 % \newtheorem{condition}[assumption]{Condition}
 % \newtheorem*{solution}{\color{Goldenrod}Solution}
 % \newenvironment{solution}[1][\proofname]{%
@@ -221,8 +223,8 @@
 % \newtheorem*{proofstr}{Proof Strategy}
 
 % subscripts and superscripts in text
-% \newcommand\tsub[1]{\textsubscript{#1}}
-% \newcommand\tsup[1]{\textsuperscript{#1}}
+\newcommand\tsub[1]{\textsubscript{#1}}
+\newcommand\tsup[1]{\textsuperscript{#1}}
 
 % ------------------------------------------------------------------------------
 % Maths macros
