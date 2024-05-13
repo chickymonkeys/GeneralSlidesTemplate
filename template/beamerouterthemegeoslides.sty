@@ -62,7 +62,7 @@
 \newlength{\marginedPaperWidth}{\paperwidth - 0.5cm}
 
 % Frame title layout
-\defbeamertemplate*{frametitle}{nhhcustom}[1][]{
+\defbeamertemplate*{frametitle}{beamerthemegeoslides}[1][]{
   \vskip0.5cm%
   \begin{beamercolorbox}[wd=\paperwidth,ht=1.2cm]{frametitle}
     \begin{tikzpicture}
@@ -85,18 +85,26 @@
   \begin{beamercolorbox}{footlinecolor}
     \leavevmode%
     \hbox{%
-      \begin{beamercolorbox}[wd=.333333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
-        \usebeamerfont{author in head/foot}\insertshortauthor\expandafter\beamer@ifempty\expandafter{\beamer@shortinstitute}{}{~~(\insertshortinstitute)}
+      \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+        \usebeamerfont{author in head/foot}%
+        \insertshortauthor\expandafter\beamer@ifempty\expandafter{\beamer@shortinstitute}{}{~~(\insertshortinstitute)}
       \end{beamercolorbox}%
-      \begin{beamercolorbox}[wd=.333333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
-        \usebeamerfont{title in head/foot}\hypersetup{hidelinks}\insertshorttitle%
+      \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+        \usebeamerfont{title in head/foot}%
+        \hypersetup{hidelinks}%
+        \insertshorttitle%
       \end{beamercolorbox}%
-      \begin{beamercolorbox}[wd=.222222222\paperwidth,ht=2.25ex,dp=1ex, right]{date in head/foot}%
-        \usebeamerfont{date in head/foot}\insertshortdate%\hspace*{2em}
+      \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,leftskip=.1cm,rightskip=.1cm plus1fil]{date in head/foot}%
+        \usebeamerfont{date in head/foot}%
+        \hfill%
+        \insertshortdate%
+        \hfill%
+        \insertframenumber{} / \inserttotalframenumber%
+        \hfill%
       \end{beamercolorbox}
-      \begin{beamercolorbox}[wd=.111111111\paperwidth,ht=2.25ex,dp=1ex, right]{page number in head/foot}%
-        \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
-      \end{beamercolorbox}
+      %\begin{beamercolorbox}[wd=.1\paperwidth,ht=2.25ex,dp=1ex, right]{page number in head/foot}%
+      %  \insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+      %\end{beamercolorbox}
     }%
     \vskip0pt%
   \end{beamercolorbox}
