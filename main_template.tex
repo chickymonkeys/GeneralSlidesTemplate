@@ -1,4 +1,5 @@
 % !TEX program = xelatex
+% !TEX options = --shell-escape -synctex=1 -interaction=nonstopmode -file-line-error "%DOC%"
 % !BIB program = bibtex
 % !TEX encoding = utf8
 
@@ -28,25 +29,29 @@
 % ---------------------------------------------------------------------------- %
 
 % ------------------------------------------------------------------
-% small snippet of code from stack overflow that allows to assign
-% the correct pathname for the references directory when using
-% the local system instead of Overleaf when working with others
+% Small snippet of code that allows to assign the correct pathname for the
+% references directory when using my local system instead of Overleaf when
+% when working with others. We also insert a quick hack for cross-referencing
+% external documents in overleaf, otherwise the xr package breaks.
 % https://tex.stackexchange.com/questions/107864/ifusername-foo-else-fi
+
+\usepackage{ifplatform}
 \usepackage{catchfile}
 
-% #1 = control sequence to define
-% #2 = variable to get the value of
-\newcommand{\getvar}[2]{%
-    \CatchFileEdef#1{"|kpsewhich -var-value #2"}{\endlinechar=-1 }%
-}
+% Identify the username of the local system
+\ifwindows
+    \CatchFileEdef{\usrtest}{"|PowerShell.exe echo $Env:UserName"}{\endlinechar=-1 }
+\else
+    \CatchFileEdef{\usrtest}{"|kpsewhich -var-value USER"}{\endlinechar=-1 }
+\fi
 
-\def\me{yourusername}
-\getvar{\usrtest}{USER}
+% specify your username locally
+\def\me{alepi}
 
 \ifx\me\usrtest
-    \newcommand*{\RefsPath}{../references}
+    \newcommand*{\RefsPath}{./references}
 \else
-    \newcommand*{\RefsPath}{docs/references}
+    \newcommand*{\RefsPath}{./references}
 \fi
 
 
@@ -159,8 +164,8 @@ Institution\\[1em]
 % workaround to hide natbib bibliography keeping the citations
 % make a frame with allowframebreaks if you want to keep them otherwise
 \newsavebox\mytempbib
-\bibliographystyle{aea}
-\savebox\mytempbib{\parbox{\textwidth}{\bibliography{references.bib}}}
+\bibliographystyle{\RefsPath/aea}
+\savebox\mytempbib{\parbox{\textwidth}{\bibliography{\RefsPath/references}}}
 
 
 %----------------------------------------------------------------------------- %
