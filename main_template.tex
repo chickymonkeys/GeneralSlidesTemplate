@@ -1,5 +1,5 @@
-%!LW recipe=xelatex -> bibtex -> xelatex * 2
-%!TEX encoding = utf8
+% !TEX TS-program = xelatex
+% !TEX encoding = utf8
 
 \documentclass[10pt]{beamer}
 
@@ -26,32 +26,29 @@
 %   c. Personal Data and User Ad-Hoc Commands                                  %
 % ---------------------------------------------------------------------------- %
 
-% ------------------------------------------------------------------
-% Small snippet of code that allows to assign the correct pathname for the
-% references directory when using my local system instead of Overleaf when
-% when working with others. We also insert a quick hack for cross-referencing
-% external documents in overleaf, otherwise the xr package breaks.
-% https://tex.stackexchange.com/questions/107864/ifusername-foo-else-fi
+% Resolve bibliography assets from the first matching relative references path.
+\newcommand*{\RefsPath}{}
+\newcommand*{\RefsFilename}{references}
+\newif\ifRefsPathInReferences
+\RefsPathInReferencesfalse
+\newcommand*{\TryRefsPath}[1]{%
+    \ifx\RefsPath\empty
+        \IfFileExists{#1/\RefsFilename.bib}{%
+            \IfFileExists{#1/aea.bst}{%
+                \gdef\RefsPath{#1}%
+            }{}%
+        }{}%
+    \fi
+}
 
-\usepackage{ifplatform}
-\usepackage{catchfile}
+\TryRefsPath{references}
+\ifx\RefsPath\empty\else\RefsPathInReferencestrue\fi
+\TryRefsPath{./references}
+\TryRefsPath{../references}
+\TryRefsPath{../../references}
 
-% Identify the username of the local system
-\ifwindows
-    \CatchFileEdef{\usrtest}{"|PowerShell.exe echo $Env:UserName"}{\endlinechar=-1 }
-\else
-    \CatchFileEdef{\usrtest}{"|kpsewhich -var-value USER"}{\endlinechar=-1 }
-\fi
-
-% specify your username locally
-\def\me{alepi}
-
-\ifx\me\usrtest
-    \newcommand*{\RefsPath}{./references}
-\else
-    \newcommand*{\RefsPath}{./references}
-\fi
-
+\newcommand*{\RefsStyle}{\RefsPath/aea}
+\newcommand*{\RefsBib}{\RefsPath/\RefsFilename}
 
 % Setup Frame Title Continuation
 \setbeamertemplate{frametitle continuation}[from second][(contd.)]
@@ -80,15 +77,6 @@
 
 % High-Res Pictures Option
 \DeclareGraphicsExtensions{.pdf, .png}
-
-\let\oldcite=\cite
-\let\oldcitet=\citet
-\let\oldcitep=\citep
-\let\oldcitealp=\citealp
-\renewcommand{\citet}[2][]{\textcolor{grayku}{\oldcitet[#1]{#2}}}
-\renewcommand{\citep}[2][]{\textcolor{grayku}{\oldcitep[#1]{#2}}}
-\renewcommand{\citealp}[2][]{\textcolor{grayku}{\oldcitealp[#1]{#2}}}
-\renewcommand{\cite}[2][]{\textcolor{grayku}{\oldcite[#1]{#2}}}
 
 % Master slide definitions
 \title[Main Title Footer] % (optional, only for long titles)
@@ -174,8 +162,8 @@ Institution\\[1em]
 % workaround to hide natbib bibliography keeping the citations
 % make a frame with allowframebreaks if you want to keep them otherwise
 \newsavebox\mytempbib
-\bibliographystyle{\RefsPath/aea}
-\savebox\mytempbib{\parbox{\textwidth}{\bibliography{\RefsPath/references}}}
+\bibliographystyle{\RefsStyle}
+\savebox\mytempbib{\parbox{\textwidth}{\bibliography{\RefsBib}}}
 
 %----------------------------------------------------------------------------- %
 %   BACKUP SLIDES                                                              %
