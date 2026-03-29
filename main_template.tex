@@ -1,5 +1,8 @@
-% !TEX TS-program = xelatex
+% !TEX program = xelatex
 % !TEX encoding = utf8
+% !TEX options = -shell-escape
+% Compile with: latexmk -pdf -xelatex -biber main_template.tex
+% or manually: xelatex → biber → xelatex → xelatex
 
 \documentclass[10pt]{beamer}
 
@@ -34,12 +37,10 @@
 \newcommand*{\TryRefsPath}[1]{%
     \ifx\RefsPath\empty
         \IfFileExists{#1/\RefsFilename.bib}{%
-            \IfFileExists{#1/aea.bst}{%
-                \gdef\RefsPath{#1}%
-            }{}%
+            \gdef\RefsPath{#1}%
         }{}%
     \fi
-}
+}%
 
 \TryRefsPath{references}
 \ifx\RefsPath\empty\else\RefsPathInReferencestrue\fi
@@ -47,8 +48,8 @@
 \TryRefsPath{../references}
 \TryRefsPath{../../references}
 
-\newcommand*{\RefsStyle}{\RefsPath/aea}
 \newcommand*{\RefsBib}{\RefsPath/\RefsFilename}
+\addbibresource{\RefsBib.bib}
 
 % Setup Frame Title Continuation
 \setbeamertemplate{frametitle continuation}[from second][(contd.)]
@@ -145,7 +146,7 @@ Institution\\[1em]
 
 
 % THANK YOU SLIDE --------------------------------------------------------------
-\begin{frame}
+\begin{frame}{References}
     \centering
     \begin{LARGE}Thank you!\end{LARGE}
 
@@ -159,11 +160,14 @@ Institution\\[1em]
 %   REFERENCES                                                                 %
 %----------------------------------------------------------------------------- %
 
-% workaround to hide natbib bibliography keeping the citations
-% make a frame with allowframebreaks if you want to keep them otherwise
-\newsavebox\mytempbib
-\bibliographystyle{\RefsStyle}
-\savebox\mytempbib{\parbox{\textwidth}{\bibliography{\RefsBib}}}
+% Bibliography is hidden from the slides but compiled so citations resolve.
+% To show it, replace the savebox with a frame containing \printbibliography.
+%\newsavebox\shadowReferences
+%\savebox\shadowReferences{\parbox{\textwidth}{\printbibliography}}
+
+\begin{frame}
+  \printbibliography
+\end{frame}
 
 %----------------------------------------------------------------------------- %
 %   BACKUP SLIDES                                                              %

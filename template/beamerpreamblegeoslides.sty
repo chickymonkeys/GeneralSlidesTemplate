@@ -63,11 +63,61 @@
 
 \renewcommand\theadfont{\bfseries}
 
-% we are using bibtex with natbib instead of biblatex and biber as in the
-% original format because of issues with biber and to use the AEA bibliography
-% \usepackage[sectionbib,semicolon,authoryear]{natbib}
-% \usepackage[sectionbib]{chapterbib}
-\usepackage{natbib}
+% Bibliography ----------------------------------------------------------------
+% Migrate to biblatex + biber, bibtex and natbib are over
+\usepackage[%
+    backend=biber,%
+    style=authoryear-comp,% authoryear style, compressed multi-cites
+    natbib=true,% keeps \citet and \citep working unchanged
+    uniquename=false,%
+    uniquelist=false,%
+    maxcitenames=3,%
+    maxbibnames=99,%
+    dashed=false%
+]{biblatex}
+
+% Suppress fields that you dthat you do not want printed
+\AtEveryBibitem{%
+    \clearfield{issn}%
+    \clearfield{eprint}%
+    \clearfield{eprinttype}%
+    \clearfield{urldate}%
+    \clearfield{url}%
+    \clearfield{note}%
+    \clearfield{urlyear}%
+    \clearfield{urlmonth}%
+}
+ 
+% Use double quotes for article/chapter titles, not single quotes.
+% babel=british makes biblatex default to single quotes; override here.
+\DeclareLanguageMapping{british}{american}
+ 
+% Suppress hyperref link coloring inside the bibliography so entries
+% render in normaltext regardless of linkcolor/citecolor settings.
+\AtBeginBibliography{\hypersetup{citecolor=normaltext,linkcolor=normaltext,urlcolor=normaltext}}
+
+%% Remove "In:" prefix for articles (keep it for book chapters etc.)
+\renewbibmacro*{in:}{%
+    \ifentrytype{article}{}{\printtext{\bibstring{in}\intitlepunct}}}
+ 
+% Format volume and number as: 101 (3)  — AER style, no dot separator
+\renewbibmacro*{volume+number+eid}{%
+    \printfield{volume}%
+    \setunit*{\addnbspace}%
+    \printfield[parens]{number}%
+    \setunit{\addcolon\addspace}%
+    \printfield{eid}}
+
+% Remove "pp." prefix from article page numbers
+\DeclareFieldFormat[article]{pages}{#1}
+ 
+% Force ": " before pages instead of the default ", " from \newunit.
+% When note is empty (standard for journal articles), \setunit overrides
+% the pending separator so pages print as: Journal 101 (3): 385--409
+\renewbibmacro*{note+pages}{%
+    \printfield{note}%
+    \setunit{\addcolon\addspace}%
+    \printfield{pages}}
 
 % -----------------------------------------------------------------------------
 % Colors

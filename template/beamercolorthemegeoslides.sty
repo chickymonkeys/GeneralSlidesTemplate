@@ -93,9 +93,24 @@
   urlcolor   = citecolor
 }
 
+% Color everything in the citation (authors, years, commas, ands)
+\AtEveryCite{\color{citecolor}}
+
 % for highlighting with the same colour of the main pattern!
 % FIXME: remember to change it when you change the main layout colour
 \newcommand{\shine}[1]{\textcolor{secondarycolor}{#1}}
+
+% ------------------------------------------------------------------------------
+% Bibliography Entry Colours
+% ------------------------------------------------------------------------------
+ 
+% Override beamer's default (structure-colored) bibliography entries so they
+% render in normaltext. The item icon uses citecolor to stay in theme.
+\setbeamercolor{bibliography entry author}{fg=normaltext}
+\setbeamercolor{bibliography entry title}{fg=normaltext}
+\setbeamercolor{bibliography entry location}{fg=normaltext}
+\setbeamercolor{bibliography entry note}{fg=normaltext}
+\setbeamercolor{bibliography item}{fg=citecolor}
 
 % ------------------------------------------------------------------------------
 % Buttons

@@ -336,3 +336,9 @@ tables
 *.tex
 *.pdf
 !main_template.tex
+
+### Opencode ------------------------------------------------------------------
+opencode.json
+.opencode/stubs
+.agents
+
