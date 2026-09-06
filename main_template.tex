@@ -51,48 +51,38 @@
 \newcommand*{\RefsBib}{\RefsPath/\RefsFilename}
 \addbibresource{\RefsBib.bib}
 
-% Setup Frame Title Continuation
-\setbeamertemplate{frametitle continuation}[from second][(contd.)]
-% \addtobeamertemplate{frametitle continuation}{(}{)}
-
 % relative pathnames for figures and tables
 \graphicspath{ {../../out/graphs/}{./figures/} } % Figures Path
-\newcommand*{\TablesPath}{../../out/tables/}
-\makeatletter
-\newcommand*\ExpandableInput[1]{\@@input#1 }
-\makeatother
-
-% change label format to simple or parens from empty to have numbers
-\captionsetup[figure]{%
-    justification=justified, skip=0pt, labelformat=simple,%
-    font={singlespacing,scriptsize}, position=top%
-}%
-\captionsetup[table]{%
-    justification=justified, skip=0pt, labelformat=simple,%
-    font={singlespacing,scriptsize}, position=top%
-}%
-\captionsetup[subfloat]{%
-    justification=centering, skip=0pt, labelformat=simple, position=top,%
-    textfont={singlespacing,footnotesize}%
-}%
+\newcommand*{\TablesPath}{tables}
 
 % High-Res Pictures Option
 \DeclareGraphicsExtensions{.pdf, .png}
 
-% Master slide definitions
+% Caption styling is not set here any more: it lives in the template, so every
+% deck gets the same captions and there is no per-deck copy to drift.
+
+% Put one permanent link to the appendix index in the footer of every frame.
+% Drop this line if the deck has no appendix.
+\appendixindexlink
+
+% ---------------------------------------------------------------------------- %
+%   d. Deck Header                                                             %
+% ---------------------------------------------------------------------------- %
+
+% Every field here is stated, never inferred.
+
 \title[Main Title Footer] % (optional, only for long titles)
 {A Very interesting Title}
 \subtitle{A Very interesting (optional) subtitle}
-\author[First~Author (Presenter)]% (optional, for multiple authors)
-{First~Author\inst{1} \and Second~Author\inst{2}}
+
+% Authors: one \addauthor each, laid out in rows of \authorsperrow. The optional
+% argument is the short name for the footer and the PDF metadata.
+\authorsperrow{2}
+\addauthor[First~Author]{First~Author}{University of the Black Metal}
+\addauthor[Second~Author]{Second~Author}{University of the Shoegaze}
+
 \institute[] % (optional)
-{%
-  \inst{1}%
-  University of the Black Metal
-  \and
-  \inst{2}%
-  University of the Shoegaze
-}%
+{}%
 
 \date[Place/Conference Topic]% (optional)
 {Department of Whatever \\[0.1em]
@@ -107,63 +97,97 @@ Institution\\[1em]
 \begin{document}
 
 %----------------------------------------------------------------------------- %
-%   TITLE SLIDE                                                                %
+%   TITLE SLIDE AND FULL OUTLINE                                               %
 %----------------------------------------------------------------------------- %
 
-\begin{frame}[plain]
-    \titlepage
-    \frontlogo
-\end{frame}
+\titleframe
+
+\outlineframe
 
 %----------------------------------------------------------------------------- %
 %   INTRODUCTION                                                               %
 %----------------------------------------------------------------------------- %
 
 % --------------------------------------------------------------
-\section*{Introduction}
+\section{Introduction}
 % --------------------------------------------------------------
 
-% --------------------------------------------------------------
+\outlineframe[toc=currentsection]
 
-\begin{frame}{Introduction}{A Smart subtitle}
+% A content frame holds prose, bullets and equations in any order.
+\begin{contentframe}[title=Introduction, subtitle=A Smart subtitle,
+                     label=slide:introduction]
 
-    \citet[p. 385]{bib:becker1993}:\\
+    \citet[p. 385]{bib:becker1993}:
 
     \begin{displayquote}
-        ``The economic approach is a method of analysis, not an assumption of particular motivations. [...] The analysis assumes that individuals maximize welfare as they conceive it, whether they be selfish, altruistic, loyal, spiteful, or masochistic. Their behaviour is forward-looking, and it is also assumed to be consistent over time. In particular, they try as best they can to anticipate the uncertain consequences of their actions. Forward-looking behaviour, however, may still be rooted in the past, for the past can exert long shadows on attitudes and values.''
+        ``The economic approach is a method of analysis, not an assumption of
+        particular motivations. [\ldots] The analysis assumes that individuals
+        maximize welfare as they conceive it, whether they be selfish,
+        altruistic, loyal, spiteful, or masochistic.''
     \end{displayquote}
 
-\end{frame}
+    \begin{itemize}
+        \item A bullet, with a link that belongs to this claim:
+              \slidelink{slide:backup-detail}{the derivation}.
+        \item[$\rightarrow$] Custom markers work as usual.
+    \end{itemize}
 
+\end{contentframe}
+
+% A standout frame carries one sentence, full bleed, palette inverted.
+\begin{standoutframe}
+    The one sentence the room should leave with.
+\end{standoutframe}
+
+% A figure frame holds exactly one \slidefigure, centred and fitted.
+\begin{figureframe}[title=A Figure, subtitle=What it shows,
+                    label=slide:figure]
+    \slidefigure[width=.7\linewidth,
+                 caption={A caption in the template's house style: the long
+                          sentence that says what the reader is looking at.},
+                 note={Notes: a short source or reading line.},
+                 label=fig:example]{example-image}
+\end{figureframe}
+
+% A table frame holds exactly one \slidetable. By default the path names a .tex
+% fragment the estimation code wrote; kind=file draws an image instead.
+\begin{tableframe}[title=A Table, subtitle=Estimates, label=slide:table]
+    \slidetable[width=.7\linewidth,
+                caption={Difference-in-differences estimates of the outcome on
+                         treatment, with and without controls.},
+                note={Standard errors in parentheses.},
+                label=tab:example]{\TablesPath/example_estimates}
+\end{tableframe}
+
+% A split frame is two columns: write the left one, then \splitnext, then the
+% right one. Text beside a figure and two columns of bullets are the same frame.
+\begin{splitframe}[title=Two Columns, leftwidth=.46\textwidth,
+                   rightwidth=.5\textwidth]
+
+    \begin{itemize}
+        \item The claim on the left.
+        \item The qualification under it.
+    \end{itemize}
+
+    \splitnext
+
+    \slidefigure[width=\linewidth, caption={The evidence on the right.}]%
+                {example-image}
+
+\end{splitframe}
 
 %----------------------------------------------------------------------------- %
-%   FULL OUTLINE                                                               %
+%   CLOSING                                                                    %
 %----------------------------------------------------------------------------- %
 
-\begin{frame}{Outline}
-    \tableofcontents
-\end{frame}
-
-
-% THANK YOU SLIDE --------------------------------------------------------------
-\begin{frame}{References}
-    \centering
-    \begin{LARGE}Thank you!\end{LARGE}
-
-    \vspace{1em}
-
-    \begin{Large}\href{mailto:your@email.com}{your@email.com}\end{Large}
-
-\end{frame}
+\begin{closingframe}[message=Thank you!, contact=your@email.com,
+                     label=slide:thanks]
+\end{closingframe}
 
 %----------------------------------------------------------------------------- %
 %   REFERENCES                                                                 %
 %----------------------------------------------------------------------------- %
-
-% Bibliography is hidden from the slides but compiled so citations resolve.
-% To show it, replace the savebox with a frame containing \printbibliography.
-%\newsavebox\shadowReferences
-%\savebox\shadowReferences{\parbox{\textwidth}{\printbibliography}}
 
 \begin{frame}
   \printbibliography[sorting=nyt]
@@ -173,20 +197,28 @@ Institution\\[1em]
 %   BACKUP SLIDES                                                              %
 %----------------------------------------------------------------------------- %
 
-% --------------------------------------------------------------
-\section*{Appendix}
-% --------------------------------------------------------------
-
+% \appendix is what restarts the frame numbering and keeps the backup slides out
+% of the "n / N" in the footer. It has to come before the divider frame.
 \appendix
-\backupbegin
 
-% Backup Slides Title Page
-\begin{frame}
-  \centering
-  \begin{LARGE}Backup Slides\end{LARGE}
-\end{frame}
+\backupdividerframe
 
-\backupend
+% The appendix has its own sections, so this outline is an index of every backup
+% slide by topic. Marking it with [index] is what the footer link points at.
+\outlineframe[index]
+
+% --------------------------------------------------------------
+\section{Derivations}
+% --------------------------------------------------------------
+
+\begin{contentframe}[title=A Backup Slide, label=slide:backup-detail,
+                     links={\slideback{slide:introduction}}]
+
+    \begin{itemize}
+        \item The detail the question was about.
+    \end{itemize}
+
+\end{contentframe}
 
 % --------------------------------------------------------------
 %     You don't have to mess with anything below this line.

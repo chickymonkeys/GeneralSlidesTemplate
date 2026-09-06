@@ -37,6 +37,24 @@
 \usepackage[para]{threeparttable}        % for \tablenotes as added captions
 \usepackage{float}                       % object positioning for forcing H
 
+% Caption styling. This lives here rather than in each deck's preamble: it is
+% visual identity, so it belongs to the template, and a copy per deck is a copy
+% that drifts. Override in a deck only to depart from the house look on purpose.
+% The values are the ones the real deck measured with, so moving them here
+% changes nothing on screen.
+\captionsetup[figure]{%
+    justification=justified, skip=0pt, labelformat=simple,%
+    font={singlespacing,scriptsize}, position=top%
+}%
+\captionsetup[table]{%
+    justification=justified, skip=0pt, labelformat=simple,%
+    font={singlespacing,scriptsize}, position=top%
+}%
+\captionsetup[subfloat]{%
+    justification=centering, skip=0pt, labelformat=simple, position=top,%
+    textfont={singlespacing,footnotesize}%
+}%
+
 % lists ------------------------------------------------------------------------
 %\usepackage{paralist,enumitem}              % lists
 %\setlist[enumerate]{itemsep=2pt,topsep=3pt} % pretty numbered lists
@@ -59,6 +77,7 @@
 \usepackage{hyperref}                       % hyperlinks
 \usepackage{verbatim}                       % in order to insert code
 \usepackage{framed}
+\usepackage{appendixnumberbeamer}           % appendix frames numbered apart
 \newcounter{dummy} % necessary for correct hyperlinks (to index, bib, etc.)
 
 \renewcommand\theadfont{\bfseries}

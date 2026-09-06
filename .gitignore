@@ -332,10 +332,15 @@ TSWLatexianTemp*
 figures/*
 !figures/logos
 data
-tables
+# tables/ is where a deck's estimation code writes its .tex fragments, so it
+# is machine output in a real deck. The template ships one example fragment so
+# the demo deck compiles out of the box; everything else under tables/ stays
+# ignored.
+tables/*
 *.tex
 *.pdf
 !main_template.tex
+!tables/example_estimates.tex
 
 ### Opencode ------------------------------------------------------------------
 opencode.json

@@ -17,11 +17,14 @@
 % define main title colour overriding default settings
 \setbeamercolor*{title}{fg=primarycolor}
 
-\newcommand{\backupbegin}{
-  \newcounter{framenumberappendix}
-  \setcounter{framenumberappendix}{\value{framenumber}}
-}
-\newcommand{\backupend}{
-  \addtocounter{framenumberappendix}{-\value{framenumber}}
-  \addtocounter{framenumber}{\value{framenumberappendix}}
-}
+% Appendix numbering used to be a hand-rolled counter dance here: save the frame
+% number at \backupbegin, put it back at \backupend, so backup slides stayed out
+% of the "n / N" in the footer. The appendixnumberbeamer package loaded in the
+% preamble does exactly that, keyed off \appendix, and every surveyed Beamer
+% source uses it. The dance is gone.
+%
+% \backupbegin and \backupend survive as no-ops so decks written against the old
+% template still compile. New decks need neither: put \appendix before the
+% backup divider frame and the numbering follows.
+\newcommand{\backupbegin}{}
+\newcommand{\backupend}{}
