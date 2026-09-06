@@ -91,8 +91,12 @@
       \end{beamercolorbox}%
       \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
         \usebeamerfont{title in head/foot}%
-        \hypersetup{hidelinks}%
-        \insertshorttitle%
+        {\hypersetup{hidelinks}\insertshorttitle}%
+        % One permanent link to the appendix index, in the same place on every
+        % frame, so any backup slide is two clicks away and \slideback returns.
+        % Switched on by \appendixindexlink in the deck preamble; a deck with no
+        % appendix has nothing to point at, so it stays off by default.
+        \geoslides@appendixindexlink
       \end{beamercolorbox}%
       \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,leftskip=.1cm,rightskip=.1cm plus1fil]{date in head/foot}%
         \usebeamerfont{date in head/foot}%

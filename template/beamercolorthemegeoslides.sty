@@ -113,7 +113,26 @@
 \setbeamercolor{bibliography item}{fg=citecolor}
 
 % ------------------------------------------------------------------------------
-% Buttons
+% Links
 % ------------------------------------------------------------------------------
 
-\setbeamercolor{button}{bg=footertext,fg=primarycolor}
+% Flat links. \slidelink and \slideback are built on beamer's button, which
+% draws a rounded box: painting both the box and its border in the frame
+% background leaves a coloured word in the palette and nothing else. Every
+% surveyed Beamer source that links at all removes the box; the colour theme
+% already sets colorlinks=true, so nothing draws a border round a link either.
+\setbeamercolor{button}{bg=backgroundcolor,fg=secondarycolor}
+\setbeamercolor{button border}{fg=backgroundcolor}
+
+% The permanent footer link to the appendix index, switched on by
+% \appendixindexlink in the deck preamble.
+\setbeamercolor*{footer link}{fg=primarycolor}
+
+% ------------------------------------------------------------------------------
+% Standout Frames
+% ------------------------------------------------------------------------------
+
+% The full-bleed statement frame inverts the palette: the primary colour fills
+% the slide and the text is drawn in the background colour.
+\setbeamercolor*{standout}{bg=primarycolor,fg=backgroundcolor}
+\setbeamerfont*{standout}{size=\Large}

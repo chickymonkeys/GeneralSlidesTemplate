@@ -1,0 +1,498 @@
+% ---------------------------------------------------------------------------- %
+% GeoSlides Template for Presentations                                         %
+% Modified from the NHH-FAIR Template for Presentations                        %
+% Author: Alessandro Pizzigolotto (UCPH)                                       %
+% Version: 1.0                                                                 %
+% ---------------------------------------------------------------------------- %
+
+% The layout vocabulary: the frames a deck is built from, the artifact blocks
+% that go inside them, the flat navigation links, and the multi-author title
+% block.
+%
+% The rule this file exists to serve: the template owns visual identity and
+% alignment. A deck picks a frame and fills it. A deck never writes column
+% environments, manual spacing, \resizebox calls or aspect-ratio flags of its
+% own -- if a slide cannot be expressed here, the fix belongs in this file.
+%
+% Nine frames:
+%
+%   \titleframe                       the title page
+%   \begin{standoutframe} ... \end    one full-bleed sentence, inverted colours
+%   \begin{contentframe}  ... \end    prose, bullets and equations, top-aligned
+%   \begin{figureframe}   ... \end    one figure, centred and fitted
+%   \begin{tableframe}    ... \end    one table, centred and fitted
+%   \begin{splitframe}    ... \end    two columns, separated by \splitnext
+%   \begin{closingframe}  ... \end    the thank-you slide
+%   \outlineframe                     the table of contents
+%   \backupdividerframe               the divider that opens the appendix
+%
+% Frames that have a body are environments taking keyval options; frames that
+% have none are plain macros, and \outlineframe and \backupdividerframe take
+% the same keyval options (the title page takes none). Options are optional
+% and may be given in any order, so adding one later never renumbers anything
+% at an existing call site. See docs/layout-vocabulary.md for the full
+% reference.
+%
+% The environments are \newenvironment, not \NewDocumentEnvironment. Beamer
+% collects a frame body by scanning ahead for \end{frame}, and xparse's
+% environment machinery hides that \end{frame} in its own code, so the scan
+% never finds it and the body runs away to end of file. Plain \newenvironment
+% passes the token through and works. The one optional argument is a keyval
+% list either way, so nothing is lost by the simpler form.
+%
+% Deliberately absent: \allowframebreaks. It splits a frame silently, which
+% breaks one idea per slide and renumbers every frame after it.
+%
+% One limitation to know about: these frames wrap beamer's own frame
+% environment, so a slide that needs [fragile] -- verbatim, listings, minted --
+% has to be written as a plain \begin{frame}[fragile].
+
+\RequirePackage{pgfkeys}
+\RequirePackage{graphicx}
+
+% ------------------------------------------------------------------------------
+% Frame options
+% ------------------------------------------------------------------------------
+
+\newif\ifgeoslides@isindex
+
+% Every frame understands title, subtitle, label and links. The rest belong to
+% one frame each and are ignored by the others.
+\pgfkeys{/geoslides/frame/.cd,
+  title/.store in      = \geoslides@title,      % the frame title
+  subtitle/.store in   = \geoslides@subtitle,   % the qualifying line under it
+  label/.store in      = \geoslides@label,      % anchor name, for \slidelink
+  links/.store in      = \geoslides@links,      % links about the whole frame
+  leftwidth/.store in  = \geoslides@leftwidth,  % splitframe: left column width
+  rightwidth/.store in = \geoslides@rightwidth, % splitframe: right column width
+  message/.store in    = \geoslides@message,    % closingframe: the sign-off
+  contact/.store in    = \geoslides@contact,    % closingframe: an email address
+  toc/.store in        = \geoslides@toc,        % outlineframe: \tableofcontents options
+  index/.is if         = geoslides@isindex,     % outlineframe: this is the appendix index
+}
+
+% The anchor the appendix index always carries, so the footer link below has a
+% fixed target to point at.
+\newcommand{\geoslides@indexanchor}{geoslides:appendixindex}
+
+\newcommand{\geoslides@setkeys}[1]{%
+  \def\geoslides@title{}%
+  \def\geoslides@subtitle{}%
+  \def\geoslides@label{}%
+  \def\geoslides@links{}%
+  \def\geoslides@leftwidth{.48\textwidth}%
+  \def\geoslides@rightwidth{.48\textwidth}%
+  \def\geoslides@message{}%
+  \def\geoslides@contact{}%
+  \def\geoslides@toc{}%
+  \geoslides@isindexfalse
+  \pgfqkeys{/geoslides/frame}{#1}%
+}
+
+% Open beamer's frame. The alignment argument is always there, so the option
+% list is never empty; label= is added only when the deck asked for an anchor,
+% because beamer keeps a copy of every labelled frame and there is no reason to
+% pay that for frames nothing links to. The label value is wrapped in braces:
+% beamer's option parser trips over a ':' inside an unwrapped value and the
+% whole frame silently vanishes, which is how \slidelink targets are spelled.
+% The \edef turns the options into literal tokens, which is what beamer's
+% option parser needs to see.
+\newcommand{\geoslides@openframe}[1]{%
+  \ifx\geoslides@label\@empty
+    \edef\geoslides@next{\noexpand\begin{frame}[#1]}%
+  \else
+    \edef\geoslides@next{\noexpand\begin{frame}[#1,label={\geoslides@label}]}%
+  \fi
+  \geoslides@next
+}
+
+% Title and subtitle. Frame-level links print at the end of the subtitle line,
+% which is where a hand-written deck already puts them.
+\newcommand{\geoslides@titleline}{%
+  \frametitle{\geoslides@title}%
+  \ifx\geoslides@subtitle\@empty
+    \ifx\geoslides@links\@empty\else\framesubtitle{\geoslides@links}\fi
+  \else
+    \ifx\geoslides@links\@empty
+      \framesubtitle{\geoslides@subtitle}%
+    \else
+      \framesubtitle{\geoslides@subtitle\enspace\geoslides@links}%
+    \fi
+  \fi
+}
+
+% ------------------------------------------------------------------------------
+% Navigation: flat links
+% ------------------------------------------------------------------------------
+
+% Beamer's own buttons draw a rounded grey box. The colour theme paints both the
+% box and its border in the frame background, so what is left on the slide is a
+% coloured word in the palette -- the practice of every surveyed source that
+% links at all.
+
+\newcommand{\slidebackname}{Back}
+\newcommand{\appendixindexname}{Appendix}
+
+% Forward link: \slidelink{anchor}{the words to click}
+\newcommand{\slidelink}[2]{\hyperlink{#1}{\beamerbutton{#2}}}
+
+% Return link: \slideback{anchor}, worded by \slidebackname
+\newcommand{\slideback}[1]{\hyperlink{#1}{\beamerbutton{\slidebackname}}}
+
+% Declaring \appendixindexlink in the deck preamble puts one permanent link to
+% the appendix index in the footer of every frame, so any backup slide is two
+% clicks away without a navigation bar on every frame. Off unless declared,
+% because a deck with no appendix has nothing to point at.
+\newif\ifgeoslides@appendixlink
+\geoslides@appendixlinkfalse
+\newcommand{\appendixindexlink}{\geoslides@appendixlinktrue}
+
+% The footer renders the link through this wrapper rather than inlining the
+% conditional: the footline template is stored before this file loads, and
+% beamer re-scans a stored template body while \if...\fi tokens in it are still
+% undefined, which breaks it. A plain command token is inert until the frame
+% renders, by which time everything here exists.
+\newcommand{\geoslides@appendixindexlink}{%
+  \ifgeoslides@appendixlink
+    \enspace\hyperlink{\geoslides@indexanchor}%
+      {\usebeamercolor[fg]{footer link}\appendixindexname}%
+  \fi
+}
+
+% ------------------------------------------------------------------------------
+% Artifact blocks
+% ------------------------------------------------------------------------------
+
+% A figure or a table arrives as one of these. They own the fitting, so no deck
+% writes \resizebox or keepaspectratio itself.
+
+\pgfkeys{/geoslides/artifact/.cd,
+  width/.store in   = \geoslides@width,    % how wide to draw it
+  height/.store in  = \geoslides@height,   % the ceiling it may not exceed
+  caption/.store in = \geoslides@caption,  % the paragraph under it
+  note/.store in    = \geoslides@note,     % a short source or reading line
+  label/.store in   = \geoslides@artlabel, % anchor name, for \ref
+  link/.store in    = \geoslides@artlink,  % a link belonging to this artifact
+  kind/.store in    = \geoslides@kind,     % table only: input or file
+}
+
+\newcommand{\geoslides@setartifactkeys}[3]{%
+  \def\geoslides@width{#1}%
+  \def\geoslides@height{#2}%
+  \def\geoslides@caption{}%
+  \def\geoslides@note{}%
+  \def\geoslides@artlabel{}%
+  \def\geoslides@artlink{}%
+  \def\geoslides@kind{input}%
+  \pgfqkeys{/geoslides/artifact}{#3}%
+}
+
+% Read a .tex fragment written by the estimation code, without opening a group
+% around it, so the table body lands where it is asked to.
+\newcommand*\geoslides@readfragment[1]{\@@input#1 }
+
+% Scale content to the given width; if that leaves it taller than the given
+% ceiling, scale to the ceiling instead. This is the whole of the template's
+% overflow duty for artifacts.
+\newsavebox{\geoslides@fitbox}
+\newcommand{\geoslides@fit}[3]{%
+  \sbox\geoslides@fitbox{\resizebox{#1}{!}{#3}}%
+  \ifdim\dimexpr\ht\geoslides@fitbox+\dp\geoslides@fitbox\relax>\dimexpr#2\relax
+    \sbox\geoslides@fitbox{\resizebox{!}{#2}{#3}}%
+  \fi
+  \usebox\geoslides@fitbox
+}
+
+% The caption, then the optional note, then the optional link. The note undoes
+% the surrounding \centering so it sets as a justified paragraph like the
+% caption above it.
+\newcommand{\geoslides@artifactfoot}{%
+  \ifx\geoslides@caption\@empty\else
+    \caption{\geoslides@caption}%
+  \fi
+  \ifx\geoslides@artlabel\@empty\else
+    \label{\geoslides@artlabel}%
+  \fi
+  \ifx\geoslides@note\@empty\else
+    \par\vspace{2pt}%
+    {\usebeamercolor[fg]{caption}\scriptsize
+     \leftskip\z@ \rightskip\z@ \parfillskip\z@ plus 1fil\relax
+     \geoslides@note\par}%
+  \fi
+  \ifx\geoslides@artlink\@empty\else
+    \par\vspace{2pt}{\centering\geoslides@artlink\par}%
+  \fi
+}
+
+% \slidefigure[keys]{path} -- a figure the project's own code wrote, or one
+% exported from someone else's PDF; by the time it reaches here it is a file.
+\newcommand{\slidefigure}[2][]{%
+  \begingroup
+  \geoslides@setartifactkeys{.9\linewidth}{.75\textheight}{#1}%
+  \begin{figure}
+    \centering
+    \includegraphics[width=\geoslides@width,height=\geoslides@height,keepaspectratio]{#2}%
+    \geoslides@artifactfoot
+  \end{figure}%
+  \endgroup
+}
+
+% \slidetable[keys]{path} -- by default a .tex fragment pulled in with
+% kind=input; kind=file draws an image instead, which is how a table recovered
+% from someone else's PDF as a vector clip arrives.
+\newcommand{\geoslides@filekind}{file}
+\newcommand{\slidetable}[2][]{%
+  \begingroup
+  \geoslides@setartifactkeys{\linewidth}{.72\textheight}{#1}%
+  \begin{table}
+    \centering
+    \ifx\geoslides@kind\geoslides@filekind
+      \includegraphics[width=\geoslides@width,height=\geoslides@height,keepaspectratio]{#2}%
+    \else
+      \geoslides@fit{\geoslides@width}{\geoslides@height}{\geoslides@readfragment{#2}}%
+    \fi
+    \geoslides@artifactfoot
+  \end{table}%
+  \endgroup
+}
+
+% ------------------------------------------------------------------------------
+% Frames
+% ------------------------------------------------------------------------------
+
+% The title page. Everything on it comes from the deck header: \title,
+% \subtitle, \addauthor (or \author), \institute and \date.
+\newcommand{\titleframe}{%
+  \begin{frame}[plain,c]
+    \titlepage
+    \frontlogo
+  \end{frame}%
+}
+
+% One sentence, full bleed, palette inverted. No frame title, no headline and no
+% footer, so nothing on the slide competes with the sentence.
+\newenvironment{standoutframe}[1][]
+{%
+  \geoslides@setkeys{#1}%
+  \geoslides@openframe{plain,c}%
+  \setbeamercolor{background canvas}{use=standout,bg=standout.bg}%
+  \usebeamercolor[fg]{standout}%
+  \usebeamerfont{standout}%
+  \centering
+}
+{%
+  \par
+  \end{frame}%
+}
+
+% Prose, bullets and equations, in whatever order the slide needs them. Content
+% starts at the top and flows down the page.
+\newenvironment{contentframe}[1][]
+{%
+  \geoslides@setkeys{#1}%
+  \geoslides@openframe{t}%
+  \geoslides@titleline
+}
+{%
+  \end{frame}%
+}
+
+% One figure, vertically centred in the space the frame title leaves. The body
+% is a single \slidefigure.
+\newenvironment{figureframe}[1][]
+{%
+  \geoslides@setkeys{#1}%
+  \geoslides@openframe{c}%
+  \geoslides@titleline
+}
+{%
+  \end{frame}%
+}
+
+% One table, vertically centred. The body is a single \slidetable.
+\newenvironment{tableframe}[1][]
+{%
+  \geoslides@setkeys{#1}%
+  \geoslides@openframe{c}%
+  \geoslides@titleline
+}
+{%
+  \end{frame}%
+}
+
+% Two columns. Write the left column, then \splitnext, then the right one --
+% "text left, figure right" and "two columns of bullets" are the same frame with
+% different contents, so there is only this one.
+%
+% The columns are two \vtop boxes in an \hbox, not beamer's columns
+% environment: beamer collects a frame body by counting literal \begin and
+% \end tokens, so an environment whose begin code opens \begin{columns} can
+% never be balanced -- the matching \end tokens live in the end code, invisible
+% to the collector, and the body runs away to end of file. The \vtop pair is
+% invisible to that collector and keeps the same user surface: a left column,
+% \splitnext, a right column. Alignment is the template's job either way.
+\newenvironment{splitframe}[1][]
+{%
+  \geoslides@setkeys{#1}%
+  \geoslides@openframe{t}%
+  \geoslides@titleline
+  \hbox to\linewidth\bgroup
+    \vtop\bgroup\hsize=\geoslides@leftwidth\relax\linewidth=\hsize\relax
+}
+{%
+  \egroup
+  \egroup
+  \end{frame}%
+}
+
+\newcommand{\splitnext}{%
+  \egroup
+  \hfil
+  \vtop\bgroup\hsize=\geoslides@rightwidth\relax\linewidth=\hsize\relax
+}
+
+% The thank-you slide: a headline (the deck title unless another is given), a
+% sign-off and an address. Anything in the body prints underneath.
+\newenvironment{closingframe}[1][]
+{%
+  \geoslides@setkeys{#1}%
+  \geoslides@openframe{c}%
+  \centering
+  \ifx\geoslides@title\@empty
+    {\LARGE\inserttitle\par}%
+  \else
+    {\LARGE\geoslides@title\par}%
+  \fi
+  \vspace{3em}%
+  \ifx\geoslides@message\@empty\else
+    {\Large\geoslides@message\par}%
+    \vspace{1em}%
+  \fi
+  \ifx\geoslides@contact\@empty\else
+    {\Large\href{mailto:\geoslides@contact}{\geoslides@contact}\par}%
+    \vspace{1em}%
+  \fi
+}
+{%
+  \par
+  \end{frame}%
+}
+
+% The table of contents. Plain \outlineframe after the deck header prints the
+% whole thing; \outlineframe[toc=currentsection] at a section boundary prints
+% the section it is opening. Inside the appendix it lists the backup sections,
+% which is the index every backup slide is reachable from -- mark that one with
+% \outlineframe[index] so the footer link can find it.
+\newcommand{\outlinename}{Outline}
+\newcommand{\outlineframe}[1][]{%
+  \begingroup
+  \geoslides@setkeys{#1}%
+  \ifx\geoslides@title\@empty\def\geoslides@title{\outlinename}\fi
+  \ifgeoslides@isindex
+    \ifx\geoslides@label\@empty
+      \let\geoslides@label\geoslides@indexanchor
+    \fi
+  \fi
+  \geoslides@openframe{t}%
+  \geoslides@titleline
+  \ifx\geoslides@toc\@empty
+    \tableofcontents
+  \else
+    \edef\geoslides@next{\noexpand\tableofcontents[\geoslides@toc]}%
+    \geoslides@next
+  \fi
+  \end{frame}%
+  \endgroup
+}
+
+% The divider that opens the appendix. Put \appendix before it: that is what
+% restarts the frame numbering and keeps the backup slides out of the total.
+\newcommand{\backupdividername}{Backup Slides}
+\newcommand{\backupdividerframe}[1][]{%
+  \begingroup
+  \geoslides@setkeys{#1}%
+  \ifx\geoslides@title\@empty\def\geoslides@title{\backupdividername}\fi
+  \geoslides@openframe{c}%
+  \centering
+  {\LARGE\geoslides@title\par}%
+  \ifx\geoslides@subtitle\@empty\else
+    \vspace{1em}{\large\geoslides@subtitle\par}%
+  \fi
+  \end{frame}%
+  \endgroup
+}
+
+% ------------------------------------------------------------------------------
+% The multi-author title block
+% ------------------------------------------------------------------------------
+
+% \addauthor[Surname]{Full Name}{Affiliation}, once per author, in the deck
+% preamble. The template lays them out in rows of \authorsperrow and builds the
+% short form for the footer, so no deck hand-builds a column block inside
+% \author{} again. The optional argument is the name for the footer and the PDF
+% metadata; it defaults to the full name.
+%
+% Call \authorsperrow before the first \addauthor. Five authors three to a row
+% give a row of three and a row of two.
+
+\newcounter{geoslides@authors}   % how many authors so far
+\newcounter{geoslides@inrow}     % how many of them in the row being built
+\newcommand{\geoslides@perrow}{2}
+\newcommand{\authorsperrow}[1]{\renewcommand{\geoslides@perrow}{#1}}
+
+\newcommand{\geoslides@authorbody}{}  % the rows built so far
+\newcommand{\geoslides@closerow}{}    % closes the row still open, if any
+\newcommand{\geoslides@shortlead}{}   % every short name but the last
+\newcommand{\geoslides@shortlast}{}   % the last one, joined on with "and"
+
+\newcommand{\geoslides@authorblock}{\geoslides@authorbody\geoslides@closerow}
+
+\newcommand{\geoslides@shortauthors}{%
+  \ifx\geoslides@shortlead\@empty
+    \geoslides@shortlast
+  \else
+    \geoslides@shortlead\space and \geoslides@shortlast
+  \fi
+}
+
+\newcommand{\addauthor}[3][]{%
+  \stepcounter{geoslides@authors}%
+  \stepcounter{geoslides@inrow}%
+  % open a row on its first author
+  \ifnum\value{geoslides@inrow}=1\relax
+    \ifnum\value{geoslides@authors}>1\relax
+      \g@addto@macro\geoslides@authorbody{\vspace{12pt}}%
+    \fi
+    \g@addto@macro\geoslides@authorbody{\begin{columns}[t]}%
+    \renewcommand{\geoslides@closerow}{\end{columns}}%
+  \fi
+  \g@addto@macro\geoslides@authorbody{%
+    \column{\dimexpr\textwidth/\geoslides@perrow\relax}%
+    \centering #2 \\ {\footnotesize\itshape #3}%
+  }%
+  % close it on its last
+  \ifnum\value{geoslides@inrow}<\geoslides@perrow\relax\else
+    \g@addto@macro\geoslides@authorbody{\end{columns}}%
+    \renewcommand{\geoslides@closerow}{}%
+    \setcounter{geoslides@inrow}{0}%
+  \fi
+  % the short form: fold the previous last name into the lead, then take this
+  % author's short name as the new last
+  \ifnum\value{geoslides@authors}>1\relax
+    \ifx\geoslides@shortlead\@empty
+      \let\geoslides@shortlead\geoslides@shortlast
+    \else
+      \protected@edef\geoslides@shortlead{\geoslides@shortlead, \geoslides@shortlast}%
+    \fi
+  \fi
+  \def\geoslides@shortname{#1}%
+  \ifx\geoslides@shortname\@empty
+    \def\geoslides@shortlast{#2}%
+  \else
+    \def\geoslides@shortlast{#1}%
+  \fi
+  % re-issue \author, so the deck preamble needs no second command; the block
+  % and the short form are macros, so the last call carries every author
+  \author[\geoslides@shortauthors]%
+    {\texorpdfstring{\geoslides@authorblock}{\geoslides@shortauthors}}%
+}
