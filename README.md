@@ -1,24 +1,61 @@
 # GeneralSlidesTemplate
-Custom Slides Template to start from for presentations 
 
-- **FIXME** Citations are not coloured when it comes to pages and additional
-  arguments for the `\citet{}` command. Workaround done, but not nice.
-- **FIXME** There is a bit of a mess in the way the template works, tidy up.
-- **FIXME** There is an issue with the lists not working as in the layout for
-  drafts.
+A Beamer presentation template — the **GeoSlides** theme — to start a deck from.
+The template owns visual identity and alignment; a deck picks a frame and fills
+it. The full reference is [docs/layout-vocabulary.md](docs/layout-vocabulary.md).
 
----
+## Requirements
 
-# Layout vocabulary
+- A TeX distribution with **XeLaTeX**, **latexmk** and **biber**
+  (MacTeX or TeX Live, for example).
+- The fonts in [`fonts/`](fonts/) — the theme loads them with `fontspec`,
+  so the `fonts/` directory has to sit next to your deck, exactly as in this
+  repository.
 
-The template defines nine frames a deck is built from — title, standout,
-content, figure, table, split, closing, outline and backup-divider — plus the
-artifact blocks that go inside them, the flat navigation links, and a
-structured multi-author title block. A deck picks a frame and fills it; the
+## Repository layout
+
+- `main_template.tex` — the demo deck. Copy it (or the whole repository) to
+  start a presentation.
+- `template/` — the theme. `beamerthemegeoslides.sty` loads the preamble
+  (packages, colours, maths macros), the inner, outer and colour sub-themes,
+  and the frames that define the layout vocabulary.
+- `docs/layout-vocabulary.md` — the reference for the layout vocabulary: the
+  nine frames, the artifact blocks, the navigation links and the title block.
+- `fonts/` — the house fonts (Neutra Text and Sentinel).
+- `figures/` — your figures; `figures/logos/` holds the front and sidebar
+  logos, switched on in `template/beamerouterthemegeoslides.sty`.
+- `tables/` — `.tex` table fragments the deck's estimation code writes.
+- `references/` — `references.bib`; the deck preamble discovers it
+  automatically (also when the deck is compiled from a subdirectory).
+
+## Getting started
+
+1. Copy `main_template.tex` to your deck — or fork the whole repository, since
+   paths inside the theme are relative to the main `.tex` file.
+2. Fill in the deck header: `\title`, `\subtitle`, `\authorsperrow` +
+   one `\addauthor` per author, `\institute`, `\date`, `\subject`.
+3. Drop the demo frames and build your deck out of the layout vocabulary.
+4. Put figures in `figures/`, table fragments in `tables/`, and citations in
+   `references/references.bib`.
+5. Compile.
+
+## Compiling
+
+```bash
+latexmk -pdf -xelatex main_template.tex
+```
+
+latexmk detects biber on its own. To run the chain by hand:
+`xelatex → biber → xelatex → xelatex`.
+
+## The layout vocabulary
+
+A deck is built from nine frames — title, standout, content, figure, table,
+split, closing, outline and backup-divider — plus the artifact blocks that go
+inside them, the flat navigation links, and the multi-author title block. The
 template owns alignment and styling, so a deck never writes column
 environments, manual spacing or `\resizebox` of its own.
 
-The full reference is [docs/layout-vocabulary.md](docs/layout-vocabulary.md).
 The quick shape of a deck:
 
 ```latex
@@ -53,214 +90,5 @@ The quick shape of a deck:
 \end{contentframe}
 ```
 
-Compile with `latexmk -pdf -xelatex -biber main_template.tex`.
-
----
-
-# LaTeX Workshop Settings for VSCODE
-
-```json
-{
-  "latex-workshop.latex.tools": [
-    {
-      "name": "latexmk",
-      "command": "latexmk",
-      "args": [
-        "-shell-escape",
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "-pdf",
-        "-outdir=%OUTDIR%",
-        "%DOC%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "lualatexmk",
-      "command": "latexmk",
-      "args": [
-        "-shell-escape",
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "-lualatex",
-        "-outdir=%OUTDIR%",
-        "%DOC%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "xelatexmk",
-      "command": "latexmk",
-      "args": [
-        "-shell-escape",
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "-xelatex",
-        "-outdir=%OUTDIR%",
-        "%DOC%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "latexmk_rconly",
-      "command": "latexmk",
-      "args": [
-        "%DOC%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "pdflatex",
-      "command": "pdflatex",
-      "args": [
-        "-shell-escape",
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "%DOC%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "bibtex",
-      "command": "bibtex",
-      "args": [
-        "%DOCFILE%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "rnw2tex",
-      "command": "Rscript",
-      "args": [
-        "-e",
-        "knitr::opts_knit$set(concordance = TRUE); knitr::knit('%DOCFILE_EXT%')"
-      ],
-      "env": {}
-    },
-    {
-      "name": "jnw2tex",
-      "command": "julia",
-      "args": [
-        "-e",
-        "using Weave; weave(\"%DOC_EXT%\", doctype=\"tex\")"
-      ],
-      "env": {}
-    },
-    {
-      "name": "jnw2texminted",
-      "command": "julia",
-      "args": [
-        "-e",
-        "using Weave; weave(\"%DOC_EXT%\", doctype=\"texminted\")"
-      ],
-      "env": {}
-    },
-    {
-      "name": "pnw2tex",
-      "command": "pweave",
-      "args": [
-        "-f",
-        "tex",
-        "%DOC_EXT%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "pnw2texminted",
-      "command": "pweave",
-      "args": [
-        "-f",
-        "texminted",
-        "%DOC_EXT%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "tectonic",
-      "command": "tectonic",
-      "args": [
-        "--synctex",
-        "--keep-logs",
-        "--print",
-        "%DOC%.tex"
-      ],
-      "env": {}
-    }
-  ],
-  "latex-workshop.latex.recipes": [
-    {
-      "name": "latexmk",
-      "tools": [
-        "latexmk"
-      ]
-    },
-    {
-      "name": "latexmk (latexmkrc)",
-      "tools": [
-        "latexmk_rconly"
-      ]
-    },
-    {
-      "name": "latexmk (lualatex)",
-      "tools": [
-        "lualatexmk"
-      ]
-    },
-    {
-      "name": "latexmk (xelatex)",
-      "tools": [
-        "xelatexmk"
-      ]
-    },
-    {
-      "name": "pdflatex -> bibtex -> pdflatex * 2",
-      "tools": [
-        "pdflatex",
-        "bibtex",
-        "pdflatex",
-        "pdflatex"
-      ]
-    },
-    {
-      "name": "xelatex -> bibtex -> xelatex * 2",
-      "tools": [
-        "xelatexmk",
-        "bibtex",
-        "xelatexmk",
-        "xelatexmk"
-      ]
-    },
-    {
-      "name": "Compile Rnw files",
-      "tools": [
-        "rnw2tex",
-        "latexmk"
-      ]
-    },
-    {
-      "name": "Compile Jnw files",
-      "tools": [
-        "jnw2tex",
-        "latexmk"
-      ]
-    },
-    {
-      "name": "Compile Pnw files",
-      "tools": [
-        "pnw2tex",
-        "latexmk"
-      ]
-    },
-    {
-      "name": "tectonic",
-      "tools": [
-        "tectonic"
-      ]
-    }
-  ]
-}
-```
+The full reference — every frame, option, artifact block and link — is in
+[docs/layout-vocabulary.md](docs/layout-vocabulary.md).
