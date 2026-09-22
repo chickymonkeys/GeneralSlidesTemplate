@@ -342,8 +342,10 @@ tables/*
 !main_template.tex
 !tables/example_estimates.tex
 
-### Opencode ------------------------------------------------------------------
+### Agents ------------------------------------------------------------------
 opencode.json
-.opencode/stubs
-.agents
+.opencode/
+.agents/
+.claude/
+.codex/
 
