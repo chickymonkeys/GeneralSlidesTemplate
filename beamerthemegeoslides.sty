@@ -1,0 +1,669 @@
+% ---------------------------------------------------------------------------- %
+% GeoSlides: a Beamer theme for academic presentations                         %
+% Modified from the NHH-FAIR Template for Presentations                        %
+% Author: Alessandro Pizzigolotto (UCPH)                                       %
+% ---------------------------------------------------------------------------- %
+%
+% Load it the standard Beamer way, in the deck preamble:
+%
+%     \usetheme{geoslides}
+%     \usetheme[palette=nhh, authorsperrow=3]{geoslides}
+%
+% and write the deck in plain Beamer: \begin{frame}{Title}{Subtitle}, columns,
+% figure, table, block, \pause, \appendix ... The theme styles all of it.
+%
+% Options (all optional, in any order):
+%
+%   palette=ku|nhh|mit|fair   colour palette (default: ku)
+%   housefont=true|false      Neutra Text for the text (default: true; needs
+%                             XeLaTeX or LuaLaTeX, falls back to Latin Modern)
+%   fontpath=<dir/>           where Neutra Text lives (default: fonts/)
+%   authorsperrow=<n>|auto    authors per row on the title page (default: auto)
+%   appendixlink=true|false   "Appendix" link in the footer of decks that have
+%                             an \appendix (default: true)
+%   biblatex=true|false       load biblatex with the house citation style
+%                             (default: true; false to set up your own)
+%
+% The colour roles (primarycolor, secondarycolor, normaltext, citecolor, ...)
+% are ordinary xcolor names: redefine any of them with \colorlet after
+% \usetheme, e.g. \colorlet{primarycolor}{darkbluenhh}.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemegeoslides}[2026/10/20 v2.0 GeoSlides Beamer theme]
+
+% ------------------------------------------------------------------------------
+% Options
+% ------------------------------------------------------------------------------
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=geoslides, prefix=geoslides@}
+\DeclareStringOption[ku]{palette}
+\DeclareBoolOption[true]{housefont}
+\DeclareStringOption[fonts/]{fontpath}
+\DeclareStringOption[auto]{authorsperrow}
+\DeclareBoolOption[true]{appendixlink}
+\DeclareBoolOption[true]{biblatex}
+\ProcessKeyvalOptions*
+
+\mode<presentation>
+
+% ------------------------------------------------------------------------------
+% Packages
+% ------------------------------------------------------------------------------
+
+% What the theme itself needs
+\RequirePackage{etoolbox}
+\RequirePackage{iftex}
+\RequirePackage{tikz}                    % the frame title bar
+\RequirePackage{appendixnumberbeamer}    % backup slides numbered apart
+
+% What nearly every academic deck needs
+\RequirePackage{amsmath, amssymb}
+\RequirePackage{booktabs, multirow}      % tables from estimation code
+\RequirePackage[para]{threeparttable}    % \begin{tablenotes} under a table
+\RequirePackage{caption, subcaption}     % captions and figure panels
+\RequirePackage[autostyle=try]{csquotes} % \enquote, displayquote
+
+% ------------------------------------------------------------------------------
+% Fonts
+% ------------------------------------------------------------------------------
+
+% Text in Neutra Text, maths in Palatino. Neutra Text is an OpenType font, so
+% it needs XeLaTeX or LuaLaTeX; it is looked for in fontpath first and then
+% among the installed fonts. Without it (or under pdfLaTeX) the deck still
+% compiles, in Latin Modern Sans.
+\usefonttheme{professionalfonts}
+
+\iftutex
+  \RequirePackage{mathpazo}
+  \RequirePackage[no-math]{fontspec}
+  \newcommand{\geoslides@neutra}[1]{%
+    \setsansfont{NeutraText-Book}[%
+    #1,
+    Extension      = .otf,
+    ItalicFont     = NeutraText-BookItalic,
+    BoldFont       = NeutraText-Bold,
+    BoldItalicFont = NeutraText-BoldItalic
+    ]%
+  }
+  \ifgeoslides@housefont
+    \IfFileExists{\geoslides@fontpath NeutraText-Book.otf}{%
+      \geoslides@neutra{Path=\geoslides@fontpath}%
+    }{%
+      \IfFontExistsTF{NeutraText-Book.otf}{%
+        \geoslides@neutra{}%
+      }{%
+        \PackageWarningNoLine{beamerthemegeoslides}{%
+          Neutra Text is neither in '\geoslides@fontpath' nor\MessageBreak
+          installed, so the text is set in Latin Modern Sans.\MessageBreak
+          Set the theme option fontpath=<dir/> to point at it%
+        }%
+      }%
+    }%
+  \fi
+\else
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage{lmodern}
+  \RequirePackage{mathpazo}
+  \ifgeoslides@housefont
+    \PackageInfo{beamerthemegeoslides}{%
+      Neutra Text needs XeLaTeX or LuaLaTeX; using Latin Modern Sans%
+    }%
+  \fi
+\fi
+
+\setbeamerfont{frametitle}{size=\Large}
+\setbeamerfont{framesubtitle}{size=\small}
+\setbeamerfont{institute}{size=\footnotesize, shape=\itshape}
+\setbeamerfont{description item}{series=\bfseries}
+\setbeamerfont{standout}{size=\Large}
+
+% ------------------------------------------------------------------------------
+% Colours
+% ------------------------------------------------------------------------------
+
+% University of Copenhagen
+\definecolor{darkredku}{RGB}{144,26,30}
+\definecolor{redku}{RGB}{199,48,40}
+\definecolor{lightredku}{RGB}{219,59,10}
+\definecolor{darkblueku}{RGB}{18,41,71}
+\definecolor{blueku}{RGB}{66,85,112}
+\definecolor{lightblueku}{RGB}{186,199,217}
+\definecolor{darkpetroleumku}{RGB}{10,89,99}
+\definecolor{petroleumku}{RGB}{25,127,142}
+\definecolor{lightpetroleumku}{RGB}{183,215,222}
+\definecolor{darkgreenku}{RGB}{57,100,28}
+\definecolor{greenku}{RGB}{75,131,37}
+\definecolor{lightgreenku}{RGB}{190,202,168}
+\definecolor{darkgrayku}{RGB}{61,61,61}
+\definecolor{grayku}{RGB}{102,102,102}
+\definecolor{lightgrayku}{RGB}{225,223,223}
+\definecolor{whiteku}{RGB}{255,255,255}
+\definecolor{darkwhiteku}{RGB}{254,250,242}
+\definecolor{yellowku}{RGB}{255,189,56}
+
+% NHH Norwegian School of Economics
+\definecolor{darkbluenhh}{RGB}{0,57,90}
+\definecolor{lightbluenhh}{RGB}{59,110,143}
+\definecolor{lighterbluenhh}{RGB}{156,197,202}
+\definecolor{lightestbluenhh}{RGB}{196,223,224}
+\definecolor{darkgraynhh}{RGB}{65,64,66}
+\definecolor{goldnhh}{RGB}{177,149,58}
+\definecolor{warmgray2nhh}{RGB}{233,227,220}
+\definecolor{warmgray5nhh}{RGB}{191,182,173}
+\definecolor{warmgray9nhh}{RGB}{154,139,125}
+\definecolor{coolgray2nhh}{RGB}{230,231,232}
+\definecolor{coolgray5nhh}{RGB}{190,192,194}
+\definecolor{coolgray9nhh}{RGB}{145,145,149}
+
+% MIT
+\definecolor{redmit}{RGB}{163,31,52}
+\definecolor{darkgreymit}{RGB}{138,139,140}
+\definecolor{lightgreymit}{RGB}{194,192,191}
+
+% FAIR (NHH)
+\definecolor{pinkfair}{RGB}{221,21,106}
+\definecolor{purplefair}{RGB}{108,33,51}
+
+% Macro-Resource
+\definecolor{lightgreenres}{RGB}{181,206,151}
+\definecolor{darkgreenres}{RGB}{72,84,80}
+
+% The colour roles everything below is drawn in. A palette sets the two accent
+% colours; the neutral roles are shared.
+\colorlet{normaltext}{darkgrayku}       % body text
+\colorlet{footertext}{lightgrayku}      % footer text, middle footer box
+\colorlet{shadecolor}{lightgrayku}      % dimmed table-of-contents entries
+\colorlet{citecolor}{grayku}            % citations and URLs
+\colorlet{backgroundcolor}{white}       % the slide
+
+\@namedef{geoslides@palette@ku}{%
+  \colorlet{primarycolor}{darkredku}\colorlet{secondarycolor}{redku}%
+}
+\@namedef{geoslides@palette@nhh}{%
+  \colorlet{primarycolor}{darkbluenhh}\colorlet{secondarycolor}{lightbluenhh}%
+}
+\@namedef{geoslides@palette@mit}{%
+  \colorlet{primarycolor}{redmit}\colorlet{secondarycolor}{darkgreymit}%
+}
+\@namedef{geoslides@palette@fair}{%
+  \colorlet{primarycolor}{purplefair}\colorlet{secondarycolor}{pinkfair}%
+}
+
+\@ifundefined{geoslides@palette@\geoslides@palette}{%
+  \PackageError{beamerthemegeoslides}{Unknown palette '\geoslides@palette'}{%
+    Use one of ku, nhh, mit or fair, or define your own colours with
+    \protect\colorlet\space after \protect\usetheme.%
+  }%
+  \@nameuse{geoslides@palette@ku}%
+}{%
+  \@nameuse{geoslides@palette@\geoslides@palette}%
+}
+
+% Beamer colours. Everything a deck can write -- blocks, theorems, \alert,
+% enumerate, the outline -- follows the two accent colours.
+\setbeamercolor{background canvas}{bg=backgroundcolor}
+\setbeamercolor{normal text}{fg=normaltext}
+\setbeamercolor{structure}{fg=primarycolor}
+\setbeamercolor{alerted text}{fg=secondarycolor}
+\setbeamercolor{title}{fg=primarycolor}
+
+\setbeamercolor{frametitle}{fg=primarycolor}
+\setbeamercolor{frametitle-left}{fg=primarycolor}   % the bar left of the title
+\setbeamercolor{framesubtitle}{fg=secondarycolor}
+
+\setbeamercolor{itemize item}{fg=primarycolor}
+\setbeamercolor{enumerate item}{fg=primarycolor}
+\setbeamercolor{itemize subitem}{fg=secondarycolor}
+\setbeamercolor{itemize subsubitem}{fg=secondarycolor}
+\setbeamercolor{enumerate subitem}{fg=secondarycolor}
+\setbeamercolor{enumerate subsubitem}{fg=secondarycolor}
+\setbeamercolor{itemize/enumerate subbody}{fg=normaltext}
+\setbeamercolor{itemize/enumerate subsubbody}{fg=normaltext}
+\setbeamercolor{description item}{fg=primarycolor}
+
+\setbeamercolor{block title}{fg=primarycolor}
+\setbeamercolor{block body}{fg=normaltext}
+
+\setbeamercolor{section in toc}{fg=primarycolor}
+\setbeamercolor{section in toc shaded}{fg=primarycolor}
+\setbeamercolor{subsection in toc}{fg=normaltext}
+\setbeamercolor{subsection in toc shaded}{fg=shadecolor}
+
+\setbeamercolor{footlinecolor}{bg=primarycolor}
+\setbeamercolor{author in head/foot}{fg=footertext}
+\setbeamercolor{title in head/foot}{bg=footertext, fg=primarycolor}
+\setbeamercolor{date in head/foot}{fg=footertext}
+\setbeamercolor{page number in head/foot}{fg=footertext}
+\setbeamercolor{footer link}{fg=primarycolor}
+
+\setbeamercolor{caption}{fg=citecolor}
+\setbeamercolor{caption name}{fg=primarycolor}
+
+\setbeamercolor{bibliography entry author}{fg=normaltext}
+\setbeamercolor{bibliography entry title}{fg=normaltext}
+\setbeamercolor{bibliography entry location}{fg=normaltext}
+\setbeamercolor{bibliography entry note}{fg=normaltext}
+\setbeamercolor{bibliography item}{fg=citecolor}
+
+% Links are coloured words: \beamerbutton's box and border are painted in the
+% slide background, and nothing draws a frame around a link.
+\setbeamercolor{button}{bg=backgroundcolor, fg=secondarycolor}
+\setbeamercolor{button border}{fg=backgroundcolor}
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = secondarycolor,
+  citecolor  = citecolor,
+  urlcolor   = citecolor
+}
+
+% The standout frame inverts the palette.
+\setbeamercolor{standout}{bg=primarycolor, fg=backgroundcolor}
+
+% ------------------------------------------------------------------------------
+% Title page
+% ------------------------------------------------------------------------------
+
+% Write the authors and their affiliations the standard way,
+%
+%     \author{First Author \and Second Author}
+%     \institute{First University \and Second University}
+%
+% and when there is one affiliation per author (and no \inst), each author is
+% set with their affiliation underneath, in rows of authorsperrow. Otherwise the
+% authors are set in rows and \institute underneath, as in plain Beamer, so
+% \inst{1} superscripts keep working.
+%
+% The footer shows the short author list: \author[Short]{...} when given, and
+% otherwise the names, "A and B" (joined with \geoslidesandname), or "A et al."
+% from three authors up. It adds the short institute only when one is given,
+% as in \institute[UCPH]{...}.
+
+\newcommand{\geoslidesandname}{and}
+
+\ExplSyntaxOn
+
+\tl_new:N \g__geoslides_author_tl
+\seq_new:N \g__geoslides_authors_seq
+\seq_new:N \g__geoslides_shortauthors_seq
+\seq_new:N \g__geoslides_institutes_seq
+\bool_new:N \g__geoslides_shortauthor_bool
+\bool_new:N \g__geoslides_shortinstitute_bool
+\int_new:N \l__geoslides_count_int
+\int_new:N \l__geoslides_perrow_int
+\int_new:N \l__geoslides_rows_int
+\dim_new:N \l__geoslides_cell_dim
+\dim_new:N \l__geoslides_gap_dim
+\tl_new:N \l__geoslides_row_tl
+
+% Split a list at \and, dropping empty entries (a blank line is one too).
+\cs_new_protected:Npn \__geoslides_split:Nn #1#2
+{
+  \seq_gset_split:Nnn #1 { \and } {#2}
+  \seq_gremove_all:Nn #1 { }
+  \seq_gremove_all:Nn #1 { \par }
+}
+
+% Record the lists as \author and \institute are given, then hand over to
+% Beamer's own definitions.
+\cs_new_eq:NN \__geoslides_beamer_author:w \beamer@author
+\cs_gset_protected:Npn \beamer@author [#1] #2
+{
+  \__geoslides_beamer_author:w [#1] {#2}
+  \tl_gset:Nn \g__geoslides_author_tl {#2}
+  \__geoslides_split:Nn \g__geoslides_authors_seq {#2}
+  \__geoslides_split:Nn \g__geoslides_shortauthors_seq {#1}
+  \tl_if_eq:nnTF {#1} {#2}
+  { \bool_gset_false:N \g__geoslides_shortauthor_bool }
+  { \bool_gset_true:N \g__geoslides_shortauthor_bool }
+}
+
+\cs_new_eq:NN \__geoslides_beamer_institute:w \beamer@institute
+\cs_gset_protected:Npn \beamer@institute [#1] #2
+{
+  \__geoslides_beamer_institute:w [#1] {#2}
+  \__geoslides_split:Nn \g__geoslides_institutes_seq {#2}
+  \tl_if_eq:nnTF {#1} {#2}
+  { \bool_gset_false:N \g__geoslides_shortinstitute_bool }
+  { \bool_gset_true:N \g__geoslides_shortinstitute_bool }
+}
+
+\prg_new_protected_conditional:Npnn \__geoslides_if_paired: { T, F, TF }
+{
+  \tl_if_in:NnTF \g__geoslides_author_tl { \inst }
+  { \prg_return_false: }
+  {
+    \int_compare:nNnTF { \seq_count:N \g__geoslides_authors_seq } =
+    { \seq_count:N \g__geoslides_institutes_seq }
+    { \prg_return_true: }
+    { \prg_return_false: }
+  }
+}
+
+% Rows of authorsperrow; "auto" fits up to three to a row, balancing the rows.
+\cs_new_protected:Npn \__geoslides_set_perrow:
+{
+  \int_set:Nn \l__geoslides_count_int { \seq_count:N \g__geoslides_authors_seq }
+  \str_if_eq:VnTF \geoslides@authorsperrow { auto }
+  {
+    \int_set:Nn \l__geoslides_rows_int
+    { \int_div_truncate:nn { \l__geoslides_count_int + 2 } { 3 } }
+    \int_set:Nn \l__geoslides_perrow_int
+    {
+      \int_div_truncate:nn
+      { \l__geoslides_count_int + \l__geoslides_rows_int - 1 }
+      { \int_max:nn { \l__geoslides_rows_int } { 1 } }
+    }
+  }
+  { \int_set:Nn \l__geoslides_perrow_int { \geoslides@authorsperrow } }
+  \int_set:Nn \l__geoslides_perrow_int
+  { \int_max:nn { \l__geoslides_perrow_int } { 1 } }
+}
+
+% A single \author entry with no paired affiliation -- one name, or a block
+% laid out by hand -- is set as Beamer sets it; anything else as a grid.
+\cs_new_protected:Npn \geoslides@authors
+{
+  \__geoslides_if_paired:TF
+  { \__geoslides_grid: }
+  {
+    \int_compare:nNnTF { \seq_count:N \g__geoslides_authors_seq } > 1
+    { \__geoslides_grid: }
+    { \insertauthor }
+  }
+}
+
+% Each author gets \textwidth/authorsperrow, and the cells of a full row are
+% spread over the slide with equal gaps; a shorter last row keeps the same gaps
+% and is centred, so its authors sit between those of the row above.
+\cs_new_protected:Npn \__geoslides_grid:
+{
+  \__geoslides_set_perrow:
+  \dim_set:Nn \l__geoslides_cell_dim
+  { \textwidth / \l__geoslides_perrow_int }
+  \dim_set:Nn \l__geoslides_gap_dim
+  {
+    ( \paperwidth - \l__geoslides_perrow_int \l__geoslides_cell_dim )
+    / ( \l__geoslides_perrow_int + 1 )
+  }
+  \cs_set_eq:NN \inst \beamer@insttitle
+  \tl_clear:N \l__geoslides_row_tl
+  \par % the line Beamer's colour box opens: the space above the authors
+  \seq_map_indexed_inline:Nn \g__geoslides_authors_seq
+  {
+    \tl_if_empty:NF \l__geoslides_row_tl
+    { \tl_put_right:Nn \l__geoslides_row_tl { \hspace { \l__geoslides_gap_dim } } }
+    \tl_put_right:Nn \l__geoslides_row_tl { \__geoslides_cell:nn {##1} {##2} }
+    \bool_lazy_or:nnT
+    { \int_compare_p:nNn { \int_mod:nn {##1} { \l__geoslides_perrow_int } } = 0 }
+    { \int_compare_p:nNn {##1} = { \l__geoslides_count_int } }
+    {
+      \noindent \makebox [ 0pt ] { \tl_use:N \l__geoslides_row_tl } \par
+      \int_compare:nNnT {##1} < { \l__geoslides_count_int } { \vspace{12pt} }
+      \tl_clear:N \l__geoslides_row_tl
+    }
+  }
+}
+
+% One author: the name, and the affiliation under it when they are paired.
+\cs_new_protected:Npn \__geoslides_cell:nn #1#2
+{
+  \parbox [t] { \l__geoslides_cell_dim }
+  {
+    \centering #2
+    \__geoslides_if_paired:T
+    {
+      \\
+      { \usebeamerfont{institute} \seq_item:Nn \g__geoslides_institutes_seq {#1} }
+    }
+  }
+}
+
+\cs_new_protected:Npn \geoslides@institute
+{ \__geoslides_if_paired:F { \insertinstitute } }
+
+\cs_new_protected:Npn \geoslides@shortauthor
+{
+  \group_begin:
+  \cs_set_eq:NN \inst \use_none:n
+  \cs_set_eq:NN \thanks \use_none:n
+  \bool_lazy_and:nnTF
+  { ! \g__geoslides_shortauthor_bool }
+  { \int_compare_p:nNn { \seq_count:N \g__geoslides_shortauthors_seq } > 2 }
+  { \seq_item:Nn \g__geoslides_shortauthors_seq { 1 } ~ et~al. }
+  {
+    \seq_use:Nnnn \g__geoslides_shortauthors_seq
+    { \c_space_tl \geoslidesandname \c_space_tl }
+    { , \c_space_tl }
+    { \c_space_tl \geoslidesandname \c_space_tl }
+  }
+  \group_end:
+}
+
+\cs_new_protected:Npn \geoslides@shortinstitute
+{
+  \bool_if:NT \g__geoslides_shortinstitute_bool
+  {
+    \exp_args:NV \tl_if_blank:nF \beamer@shortinstitute
+    { ~ ~ ( \insertshortinstitute ) }
+  }
+}
+
+\ExplSyntaxOff
+
+\defbeamertemplate*{author}{geoslides}[1][]{%
+  \begin{beamercolorbox}[sep=8pt,center,#1]{author}
+    \usebeamerfont{author}\geoslides@authors
+  \end{beamercolorbox}
+}
+
+\defbeamertemplate*{institute}{geoslides}[1][]{%
+  \begin{beamercolorbox}[sep=8pt,center,#1]{institute}
+    \usebeamerfont{institute}\geoslides@institute
+  \end{beamercolorbox}
+}
+
+% \maketitle sets the title page on a plain frame, with no footer.
+\renewcommand{\maketitle}{%
+  \ifbeamer@inframe\titlepage\else\frame[plain]{\titlepage}\fi
+}
+
+% ------------------------------------------------------------------------------
+% Frame title: a bar on the left edge, the title, the subtitle under it, and
+% the \logo, if any, at the right end.
+% ------------------------------------------------------------------------------
+
+\setbeamertemplate{headline}{}
+\setbeamertemplate{sidebar right}{}   % Beamer's default puts \logo down here
+
+% Each TikZ command below fits on one line. VimTeX indents the continuation
+% lines of a TikZ command only once it knows the deck loads TikZ, which depends
+% on whether the deck has been compiled, so a command split over lines would be
+% indented differently from one save to the next.
+\newcommand{\geoslides@frametitletext}{%
+  \usebeamerfont{frametitle}\insertframetitle
+}
+\newcommand{\geoslides@framesubtitletext}{%
+  \usebeamercolor[fg]{framesubtitle}\usebeamerfont{framesubtitle}\insertframesubtitle
+}
+
+\defbeamertemplate*{frametitle}{geoslides}[1][]{%
+  \vskip0.5cm%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.2cm]{frametitle}
+    \begin{tikzpicture}
+      \useasboundingbox (0,0) rectangle (\the\paperwidth,1.2);
+      \usebeamercolor{frametitle-left}%
+      \fill[color=frametitle-left.fg] (0,0) rectangle (0.2,1.2);
+      \ifx\insertframesubtitle\@empty
+        \node[anchor=west] at (0.3,0.61) {\geoslides@frametitletext};
+      \else
+        \node[anchor=west] at (0.2,0.81) {\geoslides@frametitletext};
+        \node[anchor=west] at (0.4,0.25) {\geoslides@framesubtitletext};
+      \fi
+      \node[anchor=east] at (\paperwidth-0.4cm,0.6) {\insertlogo};
+    \end{tikzpicture}
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{frametitle continuation}[from second][(contd.)]
+
+% ------------------------------------------------------------------------------
+% Footer: authors | short title (and the appendix link) | date and frame number
+% ------------------------------------------------------------------------------
+
+% The appendix link points at the first frame after \appendix, and shows only
+% in decks that have one.
+\newcommand{\geoslides@appendixtarget}{\hyperlinkappendixstart}
+\newcommand{\geoslides@appendixlink}{%
+  \ifgeoslides@appendixlink
+    \ifx\beamer@startpageofappendix\@empty\else
+      \enspace\geoslides@appendixtarget{\usebeamercolor[fg]{footer link}\appendixname}%
+    \fi
+  \fi
+}
+
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}{footlinecolor}
+    \leavevmode%
+    \hbox{%
+      \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+        \usebeamerfont{author in head/foot}%
+        \geoslides@shortauthor\geoslides@shortinstitute
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+        \usebeamerfont{title in head/foot}%
+        {\hypersetup{hidelinks}\insertshorttitle}%
+        \geoslides@appendixlink
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,leftskip=.1cm,rightskip=.1cm plus1fil]{date in head/foot}%
+        \usebeamerfont{date in head/foot}%
+        \hfill\insertshortdate\hfill
+        \insertframenumber{} / \inserttotalframenumber\hfill
+      \end{beamercolorbox}%
+    }%
+    \vskip0pt%
+  \end{beamercolorbox}%
+}
+
+\setbeamertemplate{navigation symbols}{}
+
+% ------------------------------------------------------------------------------
+% Standout frames: \begin{frame}[standout] ... \end{frame}
+% ------------------------------------------------------------------------------
+
+% One sentence, centred, on the inverted palette, with no title and no footer.
+\newif\ifgeoslides@standout
+\define@key{beamerframe}{standout}[true]{%
+  \geoslides@standouttrue
+  \begingroup
+  \setkeys{beamerframe}{plain,c}%
+  \setbeamercolor{background canvas}{use=standout, bg=standout.bg}%
+}
+\pretocmd{\beamer@reseteecodes}{%
+  \ifgeoslides@standout\endgroup\geoslides@standoutfalse\fi
+}{}{}
+\AtBeginEnvironment{beamer@frameslide}{%
+  \ifgeoslides@standout
+    \centering\usebeamercolor[fg]{standout}\usebeamerfont{standout}%
+  \fi
+}
+
+% ------------------------------------------------------------------------------
+% Links between slides
+% ------------------------------------------------------------------------------
+
+% \slidelink{label}{text} jumps to the frame with that label;
+% \slideback{label} is the link back, worded by \slidebackname.
+\newcommand{\slidebackname}{Back}
+\newcommand{\slidelink}[2]{\hyperlink{#1}{\beamerbutton{#2}}}
+\newcommand{\slideback}[1]{\hyperlink{#1}{\beamerbutton{\slidebackname}}}
+
+% Emphasis in the accent colour; \alert does the same.
+\newcommand{\shine}[1]{\textcolor{secondarycolor}{#1}}
+
+% Commands from version 1, kept so older decks compile unchanged. They do
+% nothing now: \appendix numbers the backup slides apart, and the title page
+% prints \titlegraphic.
+\newcommand{\backupbegin}{}
+\newcommand{\backupend}{}
+\newcommand{\frontlogo}{}
+
+% ------------------------------------------------------------------------------
+% Captions, theorems
+% ------------------------------------------------------------------------------
+
+\captionsetup{%
+  justification=justified, skip=5pt, labelformat=simple,%
+  font=scriptsize, position=bottom%
+}
+\captionsetup[subfloat]{%
+  justification=centering, skip=0pt, font=scriptsize, position=top%
+}
+
+\setbeamertemplate{theorems}[numbered]
+
+% ------------------------------------------------------------------------------
+% Bibliography: author-year citations, AER-style reference list
+% ------------------------------------------------------------------------------
+
+\ifgeoslides@biblatex
+  \RequirePackage[
+  backend=biber,
+  style=authoryear-comp,  % author-year, compressed multiple citations
+  natbib=true,            % \citet and \citep
+  sorting=ynt,            % several citations in one command: by date
+  sortcites=true,         % (the reference list: \newrefcontext[sorting=nyt])
+  uniquename=false,
+  uniquelist=false,
+  maxcitenames=3,
+  maxbibnames=99,
+  dashed=false
+  ]{biblatex}
+
+  % Fields not printed in the reference list
+  \AtEveryBibitem{%
+    \clearfield{issn}%
+    \clearfield{eprint}%
+    \clearfield{eprinttype}%
+    \clearfield{urldate}%
+    \clearfield{url}%
+    \clearfield{note}%
+    \clearfield{urlyear}%
+    \clearfield{urlmonth}%
+  }
+
+  % Double quotes around titles, even in British English.
+  \DeclareLanguageMapping{british}{american}
+
+  % Citations in citecolor; the reference list in the text colour.
+  \AtEveryCite{\color{citecolor}}
+  \AtBeginBibliography{%
+    \hypersetup{citecolor=normaltext, linkcolor=normaltext, urlcolor=normaltext}%
+  }
+
+  % No "In:" before journal names (kept for chapters and the like). The test
+  % is \iffieldequalstr rather than \ifentrytype, whose \if... prefix VimTeX's
+  % indentation would read as a TeX conditional waiting for its \fi.
+  \renewbibmacro*{in:}{%
+    \iffieldequalstr{entrytype}{article}{}{%
+      \printtext{\bibstring{in}\intitlepunct}%
+    }%
+  }
+
+  % Journal 101 (3): 385--409
+  \renewbibmacro*{volume+number+eid}{%
+    \printfield{volume}%
+    \setunit*{\addnbspace}%
+    \printfield[parens]{number}%
+    \setunit{\addcolon\addspace}%
+    \printfield{eid}%
+  }
+  \DeclareFieldFormat[article]{pages}{#1}
+  \renewbibmacro*{note+pages}{%
+    \printfield{note}%
+    \setunit{\addcolon\addspace}%
+    \printfield{pages}%
+  }
+\fi
+
+\mode<all>

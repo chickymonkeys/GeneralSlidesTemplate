@@ -339,8 +339,9 @@ data
 tables/*
 *.tex
 *.pdf
-!main_template.tex
+!main.tex
 !tables/example_estimates.tex
+!figures/logos/*.pdf
 
 ### Agents ------------------------------------------------------------------
 opencode.json
